@@ -30,8 +30,8 @@ SOURCES += main.cpp\
     dialogndnmonitoring.cpp \
     ndnsettings.cpp \
     dialogndnmovementtester.cpp \
-    ndnreasoncodecombobox.cpp \
-    dialogaddndnproducts.cpp
+    dialogaddndnproducts.cpp \
+    ndnwidgets.cpp
 HEADERS  += mainwindow.h \
     databasehandler.h \
     ndnproductsmodel.h \
@@ -43,8 +43,8 @@ HEADERS  += mainwindow.h \
     dialogndnmonitoring.h \
     ndnsettings.h \
     dialogndnmovementtester.h \
-    ndnreasoncodecombobox.h \
-    dialogaddndnproducts.h
+    dialogaddndnproducts.h \
+    ndnwidgets.h
 FORMS    += mainwindow.ui \
     dialogndnproductfilters.ui \
     dialogndnproductdetails.ui \

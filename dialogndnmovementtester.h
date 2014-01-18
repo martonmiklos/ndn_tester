@@ -14,12 +14,12 @@ class MovementReportItemsModel :public QAbstractTableModel {
     Q_OBJECT
     struct MovementReportItem {
         QString NDNCode;
-        double amount, netPrice, bruttoPrice;
+        double amount, netPrice, grossPrice;
     };
 
 public:
     explicit MovementReportItemsModel(QObject *parent = NULL);
-    void addItem(QString ndnCode, double amount, double netPrice, double brutPrice);
+    void addItem(QString ndnCode, double amount, double nettoPrice, double grossPrice);
 
     int columnCount(const QModelIndex &parent) const;
     int rowCount(const QModelIndex &parent) const;
@@ -51,9 +51,11 @@ private slots:
     void on_pushButtonAddItem_clicked();
     void createOpeningStockDone(NSTransactions::TNS__CreateOpeningStockResponse);
     void createOpeningStockError(KDSoapMessage msg);
-    void itemAdded(QString ndnCode, double amount, double netPrice, double brutPrice);
+    void itemAdded(QString ndnCode, double amount, double nettoPrice, double grossPrice);
 
     void on_pushButtonSubmitSalesDocument_clicked();
+
+    void on_pushButtonSubmitStockDocument_clicked();
 
 private:
     Ui::DialogNDNMovementTester *ui;

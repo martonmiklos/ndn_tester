@@ -1,5 +1,8 @@
 #include "dialogaddndnproducts.h"
 #include "ui_dialogaddndnproducts.h"
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QDebug>
 
 DialogAddNDNProducts::DialogAddNDNProducts(QWidget *parent) :
     QDialog(parent),
@@ -28,5 +31,20 @@ void DialogAddNDNProducts::on_tableViewProducts_doubleClicked(const QModelIndex 
     emit itemSelected(m_model->data(codeIndex).toString(),
                       ui->doubleSpinBoxAmount->value(),
                       ui->doubleSpinBoxNetPrice->value(),
-                      ui->doubleSpinBoxBruttoPrice->value());
+                      ui->doubleSpinBoxGrossPrice->value());
+}
+
+void DialogAddNDNProducts::on_tableViewProducts_clicked(const QModelIndex &index)
+{
+    QString productCode =  m_model->data(m_model->index(index.row(), 0)).toString();
+    QSqlQuery query;
+    query.prepare("SELECT MAX(Price) AS Price FROM ndn_productprices WHERE ProductCode = :ProductCode "
+                  "AND (strftime('%s', validto) > strftime('%s', 'now') OR validto is null)");
+    query.bindValue(":ProductCode", productCode);
+    if (query.exec() && query.next()) {
+        ui->doubleSpinBoxGrossPrice->setValue(query.value("Price").toDouble());
+        ui->doubleSpinBoxNetPrice->setValue(query.value("Price").toDouble() * 0.90f);
+    } else {
+        qWarning() << query.lastError();
+    }
 }

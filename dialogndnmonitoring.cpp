@@ -56,7 +56,7 @@ QVariant OpeningStockModel::headerData(int section, Qt::Orientation orientation,
         case 2:
             return tr("Netto price");
         case 3:
-            return tr("Brutto price");
+            return tr("Gross price");
         }
     }
     return QVariant();
@@ -64,7 +64,7 @@ QVariant OpeningStockModel::headerData(int section, Qt::Orientation orientation,
 
 
 DialogNDNMonitoring::DialogNDNMonitoring(NDNSettings *settings, QWidget *parent) :
-    QDialog(parent),
+    QDialog(parent, Qt::Window),
     ui(new Ui::DialogNDNMonitoring),
     m_settings(settings)
 {

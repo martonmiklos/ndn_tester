@@ -1,4 +1,4 @@
-#include "ndnreasoncodecombobox.h"
+#include "ndnwidgets.h"
 
 NDNReasonCodeComboBox::NDNReasonCodeComboBox(QWidget *parent) :
     QComboBox(parent)
@@ -11,6 +11,13 @@ NDNReasonCodeComboBox::NDNReasonCodeComboBox(QWidget *parent) :
     }
 }
 
+NSTransactions::__ReasonCode_ReasonCodeEnum NDNReasonCodeComboBox::movementType()
+{
+    return NSTransactions::__ReasonCode_ReasonCodeEnum(
+                (NSTransactions::__ReasonCode_ReasonCodeEnum::Type)this->itemData(this->currentIndex()).toInt()
+                );
+}
+
 
 NDNMovementTypeComboBox::NDNMovementTypeComboBox(QWidget *parent) :
     QComboBox(parent)
@@ -21,4 +28,11 @@ NDNMovementTypeComboBox::NDNMovementTypeComboBox(QWidget *parent) :
             addItem(query.value("Name").toString(), query.value("MovementType"));
         }
     }
+}
+
+NSTransactions::__MovementType NDNMovementTypeComboBox::movementType()
+{
+    return NSTransactions::__MovementType(
+                (NSTransactions::__MovementType::Type)this->itemData(this->currentIndex()).toInt()
+                );
 }

@@ -2,6 +2,7 @@
 #include "ui_dialogndnmovementtester.h"
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QSqlDriver>
 
 MovementReportItemsModel::MovementReportItemsModel(QObject *parent) :
     QAbstractTableModel(parent)
@@ -9,12 +10,12 @@ MovementReportItemsModel::MovementReportItemsModel(QObject *parent) :
 
 }
 
-void MovementReportItemsModel::addItem(QString ndnCode, double amount, double nettoPrice, double bruttoPrice)
+void MovementReportItemsModel::addItem(QString ndnCode, double amount, double nettoPrice, double grossPrice)
 {
     MovementReportItem item;
     item.NDNCode = ndnCode;
     item.netPrice = nettoPrice;
-    item.bruttoPrice = bruttoPrice;
+    item.grossPrice = grossPrice;
     item.amount = amount;
     beginResetModel();
     m_items.append(item);
@@ -49,7 +50,7 @@ QVariant MovementReportItemsModel::data(const QModelIndex &index, int role) cons
         case 2:
             return m_items.at(index.row()).netPrice;
         case 3:
-            return m_items.at(index.row()).bruttoPrice;
+            return m_items.at(index.row()).grossPrice;
         }
     }
     return QVariant();
@@ -72,7 +73,7 @@ QVariant MovementReportItemsModel::headerData(int section, Qt::Orientation orien
         case 2:
             return tr("Netto price");
         case 3:
-            return tr("Brutto price");
+            return tr("Gross price");
         }
     }
     return QVariant();
@@ -89,7 +90,7 @@ DialogNDNMovementTester::DialogNDNMovementTester(NDNSettings *settings, QWidget 
     ui->documentDateDateTimeEdit->setDateTime(QDateTime::currentDateTime());
     ui->dueDateDateTimeEdit->setDateTime(QDateTime::currentDateTime());
     ui->salesDocumentDateDateTimeEdit->setDateTime(QDateTime::currentDateTime());
-    ui->salesIssuedOnDateTimeEdit->setDateTime(QDateTime::currentDateTime());
+    ui->salesDocumentIssuedOnDateTimeEdit->setDateTime(QDateTime::currentDateTime());
     ui->openingStockDateDateTimeEdit->setDateTime(QDateTime::currentDateTime());
 
     transactions.clientInterface()->setSslConfiguration(settings->sslConfiguration());
@@ -137,7 +138,7 @@ void DialogNDNMovementTester::on_pushButtonOpeningStock_clicked()
         openingStockLine.setProductCode(NDNCode); // NDNcode
 
         QSqlQuery query;
-        query.prepare("SELECT p.rowid as LocalProductCode, p.Name as ProductName, p.ProductGroup "
+        query.prepare("SELECT p.rowid  AS LocalProductCode, p.Name  AS ProductName, p.ProductGroup "
                       "FROM ndn_products p "
                       "WHERE p.Code = :Code");
         query.bindValue(":Code", NDNCode);
@@ -186,14 +187,90 @@ void DialogNDNMovementTester::createOpeningStockError(KDSoapMessage msg)
 
 }
 
-void DialogNDNMovementTester::itemAdded(QString ndnCode, double amount, double netPrice, double brutPrice)
+void DialogNDNMovementTester::itemAdded(QString ndnCode, double amount, double nettoPrice, double grossPrice)
 {
-    m_model->addItem(ndnCode, amount, netPrice, brutPrice);
+    m_model->addItem(ndnCode, amount, nettoPrice, grossPrice);
     ui->tableViewItems->reset();
 }
 
 void DialogNDNMovementTester::on_pushButtonSubmitSalesDocument_clicked()
 {
+    float VATSum = 0.0f, grossSum = 0.0f;
+    NSTransactions::__ArrayOfDocumentVatBreakDown VATBreakDown;
+    NSTransactions::__ArrayOfSalesDocumentLine salesDocumentLines;
+
+    for (int row = 0; row<m_model->rowCount(QModelIndex()); row++) { // loop through the adde products and create the SOAP message
+        NSTransactions::__SalesDocumentLine salesDocumentLine;
+        QString NDNCode = m_model->data(m_model->index(row, 0), Qt::DisplayRole).toString();
+        double quantity = m_model->data(m_model->index(row, 1), Qt::DisplayRole).toDouble();
+        double netListPrice = m_model->data(m_model->index(row, 2), Qt::DisplayRole).toDouble();
+        double grossPrice = m_model->data(m_model->index(row, 3), Qt::DisplayRole).toDouble();
+
+        QSqlQuery getProductInfoQuery;
+        getProductInfoQuery.prepare("SELECT p.rowid  AS LocalProductCode, p.Name  AS ProductName, p.ProductGroup, "
+                                    "p.BaseUnitOfMeasure  AS UnitOfMeasure, p.CashRegisterVATCode  AS VATCode "
+                                    "p.ExciseCategory, p.BaseBarcode AS ProductBarcode "
+                                    "p.PackagingQuantity, p.PackagingUnitOfMeasure "
+                                    "vr.Percentage  AS VATPercent"
+                                    "FROM ndn_products p "
+                                    "LEFT JOIN ndn_vatrates  AS vr ON"
+                                    "p.CashRegisterVATCode "
+                                    "WHERE p.Code = :Code");
+        getProductInfoQuery.bindValue(":Code", NDNCode);
+        if (getProductInfoQuery.exec() && getProductInfoQuery.next())  {
+            double VATValue = grossPrice*(getProductInfoQuery.value("VATPercent").toDouble()/100);
+            NSTransactions::__VATCode itemVATCode((NSTransactions::__VATCode::Type)getProductInfoQuery.value("VATCode").toInt());
+
+            salesDocumentLine.setLineNo(row);
+            salesDocumentLine.setLocalProductCode(getProductInfoQuery.value("LocalProductCode").toString());
+            salesDocumentLine.setProductCode(NDNCode);
+            salesDocumentLine.setProductName(getProductInfoQuery.value("ProductName").toString());
+            salesDocumentLine.setProductGroup(getProductInfoQuery.value("ProductGroup").toInt());
+            salesDocumentLine.setQuantity(quantity);
+            salesDocumentLine.setUnitOfMeasure(getProductInfoQuery.value("UnitOfMeasure").toString());
+            salesDocumentLine.setNetListPrice(netListPrice);
+            salesDocumentLine.setDiscountValue(0);
+            salesDocumentLine.setNetUnitPrice(netListPrice);
+            salesDocumentLine.setVATCode(itemVATCode);
+            salesDocumentLine.setVATPercent(getProductInfoQuery.value("VATPercent").toDouble());
+            salesDocumentLine.setGrossUnitPrice(grossPrice);
+            salesDocumentLine.setGrossLineTotal(grossPrice*quantity);
+            salesDocumentLine.setVATLineTotal(VATValue*quantity);
+            salesDocumentLine.setProductStockPrice(grossPrice);
+            salesDocumentLine.setGrossConsumerPrice(grossPrice);
+            salesDocumentLine.setExciseCategory(NSTransactions::__ExciseCategory((NSTransactions::__ExciseCategory::Type)getProductInfoQuery.value("ExciseCategory").toInt()));
+            salesDocumentLine.setProductBarCode(getProductInfoQuery.value("ProductBarcode").toString());
+            salesDocumentLine.setProductBarCode(getProductInfoQuery.value("PackagingQuantity").toString());
+            salesDocumentLine.setProductBarCode(getProductInfoQuery.value("PackagingUnitOfMeasure").toString());
+
+            salesDocumentLines.salesDocumentLine().append(salesDocumentLine);
+
+            grossSum += grossPrice * quantity;
+            VATSum += VATValue * quantity;
+
+            bool VATFound = false;
+            for (QList<NSTransactions::__DocumentVatBreakDown>::iterator i = VATBreakDown.documentVatBreakDown().begin(); i != VATBreakDown.documentVatBreakDown().end(); ++i) {
+                if ((*i).vATCode().type() == itemVATCode.type()) {
+                    VATFound = true;
+                    (*i).setVATAmount((*i).vATAmount() + VATSum);
+                    (*i).setNetAmount((*i).netAmount() + netListPrice * quantity);
+                    break;
+                }
+            }
+
+            if (VATFound == false) {
+                NSTransactions::__DocumentVatBreakDown VATBreakDownItem;
+                VATBreakDownItem.setVATCode(itemVATCode);
+                VATBreakDownItem.setNetAmount(netListPrice * quantity);
+                VATBreakDownItem.setVATAmount(VATSum);
+                VATBreakDown.documentVatBreakDown().append(VATBreakDownItem);
+            }
+        } else {
+            qWarning() << getProductInfoQuery.lastError();
+            return;
+        }
+    }
+
     QSqlQuery query;
     query.prepare("INSERT INTO ndn_salesdocuments"
                   "(CashRegId, Comment, CreatedAt, DocumentDate, DueDate, Gross, "
@@ -203,17 +280,60 @@ void DialogNDNMovementTester::on_pushButtonSubmitSalesDocument_clicked()
                   "(:CashRegId, :Comment, :CreatedAt, :DocumentDate, :DueDate, :Gross, "
                   ":IssuedOnDate, :MovementType, :Partner, :Reference, "
                   ":StornoReference, :VAT)");
-    query.bindValue(":CashRegId", ui->cashRegisterIDLineEdit->text());
-    query.bindValue(":Comment", ui->commentLineEdit->text());
-    query.bindValue(":CreatedAt", QDateTime::currentDateTime());
+    query.bindValue(":CashRegId", m_settings->cashRegisterID());
+    query.bindValue(":Reference", ui->salesDocumentReferenceLineEdit->text());
+    query.bindValue(":StornoReference", ui->salesStornoReferenceLineEdit->text());
+    query.bindValue(":MovementType", (int)ui->salesDocumentMovementTypecomboBox->movementType());
+    query.bindValue(":IssuedOnDate", ui->salesDocumentIssuedOnDateTimeEdit->dateTime());
     query.bindValue(":DocumentDate", ui->salesDocumentDateDateTimeEdit->dateTime());
     query.bindValue(":DueDate", ui->dueDateDateTimeEdit->dateTime());
-    //query.bindValue(":Gross", result.gross());
-    query.bindValue(":IssuedOnDate", ui->salesIssuedOnDateTimeEdit->dateTime());
-    //query.bindValue(":MovementType", result.movementType());
-    //query.bindValue(":Partner", result.partner());
-    query.bindValue(":Reference", ui->salesReferenceLineEdit->text());
-    query.bindValue(":StornoReference", ui->salesStornoReferenceLineEdit->text());
-    //query.bindValue(":VAT", );
+    query.bindValue(":Partner", ui->localPartnerCodeLineEdit->text().toInt());
+    query.bindValue(":Comment", ui->commentLineEdit->text());
+    query.bindValue(":CreatedAt", QDateTime::currentDateTime());
+    query.bindValue(":Gross", grossSum);
+    query.bindValue(":VAT", VATSum);
+
+
     qWarning() << query.exec() << query.lastError();
+
+    QString localDocumentID = "" ;
+    if (query.driver()->hasFeature(QSqlDriver::LastInsertId)) {
+        localDocumentID = query.lastInsertId().toString();
+    } else {
+        query.exec("SELECT LocalDocumentID from ndn_salesdocuments ORDER by LocalDocumentID DESC LIMIT 1");
+        if (query.exec() && query.next())
+            localDocumentID = query.value("LocalDocumentID").toString();
+    }
+
+    NSTransactions::__SalesDocument salesDocument;
+
+    salesDocument.setShopId(m_settings->shopID());
+    salesDocument.setLocalDocumentId(localDocumentID);
+    salesDocument.setCashRegId(m_settings->cashRegisterID());
+    salesDocument.setReference(ui->salesDocumentReferenceLineEdit->text());
+    salesDocument.setStornoReference(ui->salesStornoReferenceLineEdit->text());
+    salesDocument.setMovementType(ui->salesDocumentMovementTypecomboBox->movementType());
+    salesDocument.setIssuedOnDate(ui->salesDocumentIssuedOnDateTimeEdit->dateTime());
+    salesDocument.setDocumentDate(ui->salesDocumentDateDateTimeEdit->dateTime());
+
+    NSTransactions::__Partner partner;
+    partner.setLocalPartnerCode(ui->localPartnerCodeLineEdit->text());
+    partner.setName(ui->partnerNameLineEdit->text());
+    partner.setCity(ui->partnerCityLineEdit->text());
+    partner.setPostCode(ui->partnerPostcodeLineEdit->text());
+    partner.setStreet(ui->partnerStreetLineEdit->text());
+    salesDocument.setPartner(partner);
+
+    salesDocument.setCreatedAt(QDateTime::currentDateTime());
+    salesDocument.setGross(grossSum);
+    salesDocument.setVAT(VATSum);
+    salesDocument.setComment(ui->commentLineEdit->text());
+
+    salesDocument.setLines(salesDocumentLines);
+    salesDocument.setVATBreakDown(VATBreakDown);
+}
+
+void DialogNDNMovementTester::on_pushButtonSubmitStockDocument_clicked()
+{
+
 }

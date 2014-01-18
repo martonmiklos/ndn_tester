@@ -58,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ndnSettingsDialog = new DialogNDNSettings(&ndnSettings, this);
     ndnMonitoringDialog = new DialogNDNMonitoring(&ndnSettings, this);
     ndnMovementTesterDialog = new DialogNDNMovementTester(&ndnSettings, this);
+    ndnMovementTesterDialog->show();
 }
 
 MainWindow::~MainWindow()
@@ -120,7 +121,7 @@ void MainWindow::on_pushButtonGetVATRates_clicked()
 void MainWindow::getVATRatesDone(NSMasterData::TNS__GetCurrentVATRatesResponse response)
 {
     foreach (NSMasterData::__VATRate vatRate, response.getCurrentVATRatesResult().vATRate()) {
-        //dbHandler->addVATRate(vatRate);
+        dbHandler->addVATRate(vatRate);
         qWarning() << vatRate.cashRegisterVATCode();
     }
 }

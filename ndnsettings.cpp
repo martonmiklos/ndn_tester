@@ -14,6 +14,7 @@ NDNSettings::NDNSettings(QObject *parent) :
     m_webserviceURLBase = m_settings.value("webserviceURLBase", "https://adatkuldes-teszt.nemzetidohany.gov.hu:8444/nd/").toString();
     m_certificatePath = m_settings.value("certificatePath").toString();
     m_certificatePassword = m_settings.value("certificatePassword").toString();
+    m_cashRegisterID = m_settings.value("cashRegisterID").toString();
     m_settings.endGroup();
 
     m_batchSize = 0;
@@ -80,6 +81,7 @@ void NDNSettings::save()
     m_settings.setValue("webserviceURLBase", m_webserviceURLBase);
     m_settings.setValue("certificatePath", m_certificatePath);
     m_settings.setValue("certificatePassword", m_certificatePassword);
+    m_settings.setValue("cashRegisterID", m_cashRegisterID);
     m_settings.endGroup();
 }
 

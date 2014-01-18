@@ -29,6 +29,9 @@ private slots:
 private:
     Ui::DialogNDNSettings *ui;
     NDNSettings *m_settings;
+
+
+   void restoreGUIFromSettings();
 };
 
 #endif // DIALOGNDNSETTINGS_H

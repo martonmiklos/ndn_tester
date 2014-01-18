@@ -22,7 +22,11 @@
     </widget>
    </item>
    <item row="4" column="1">
-    <widget class="QDoubleSpinBox" name="doubleSpinBoxNetPrice"/>
+    <widget class="QDoubleSpinBox" name="doubleSpinBoxNetPrice">
+     <property name="maximum">
+      <double>99990000.000000000000000</double>
+     </property>
+    </widget>
    </item>
    <item row="0" column="1">
     <widget class="QPushButton" name="pushButtonFilter">
@@ -83,7 +87,7 @@
    <item row="5" column="1">
     <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>Brutto price.</string>
+      <string>Gross price:</string>
      </property>
     </widget>
    </item>
@@ -95,7 +99,11 @@
     </widget>
    </item>
    <item row="6" column="1">
-    <widget class="QDoubleSpinBox" name="doubleSpinBoxBruttoPrice"/>
+    <widget class="QDoubleSpinBox" name="doubleSpinBoxGrossPrice">
+     <property name="maximum">
+      <double>99990000.000000000000000</double>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

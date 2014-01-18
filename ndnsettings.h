@@ -35,8 +35,12 @@ public:
 
     QString certificatePath() const {return m_certificatePath;}
     void setCertificatePath(QString certificatePath) {m_certificatePath = certificatePath;}
+
     QString certificatePassword() const {return m_certificatePassword;}
     void setCertificatePassword(QString certificatePassword) {m_certificatePassword = certificatePassword;}
+
+    QString cashRegisterID() const {return m_cashRegisterID;}
+    void setCashRegisterID(QString cashRegisterID) {m_cashRegisterID = cashRegisterID;}
 
     QStringList errors() const {return m_errors;}
     void clearErrors() {m_errors.clear();}
@@ -58,7 +62,8 @@ private:
     QString m_certificatePath;
     QString m_certificatePassword;
 
-     QStringList m_errors;
+    QStringList m_errors;
+    QString m_cashRegisterID;
 };
 
 #endif // NDNSETTINGS_H

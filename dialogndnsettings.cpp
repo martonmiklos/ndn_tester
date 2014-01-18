@@ -9,7 +9,7 @@ DialogNDNSettings::DialogNDNSettings(NDNSettings *settings, QWidget *parent) :
     m_settings(settings)
 {
     ui->setupUi(this);
-    on_buttonBox_rejected(); // this will fill the inputs from the settings
+    restoreGUIFromSettings();
 }
 
 DialogNDNSettings::~DialogNDNSettings()
@@ -25,6 +25,7 @@ void DialogNDNSettings::showEvent(QShowEvent *event)
 
 void DialogNDNSettings::on_buttonBox_accepted()
 {
+    // FIXME sanity checking
     m_settings->setWebserviceURLBase(ui->webserviceURLLineEdit->text());
     m_settings->setShopID(ui->shopIDLineEdit->text());
     if (!QFile::exists(ui->lineEditCertificatePath->text())) {
@@ -33,17 +34,14 @@ void DialogNDNSettings::on_buttonBox_accepted()
     } else {
         m_settings->setCertificatePath(ui->lineEditCertificatePath->text());
     }
-
+    m_settings->setCashRegisterID(ui->lineEditCashregisterID->text());
     m_settings->setCertificatePassword(ui->lineEditCertificatePassword->text());
     m_settings->save();
 }
 
 void DialogNDNSettings::on_buttonBox_rejected()
 {
-    ui->shopIDLineEdit->setText(m_settings->shopID());
-    ui->webserviceURLLineEdit->setText(m_settings->webserviceURLBase());
-    ui->lineEditCertificatePath->setText(m_settings->certificatePath());
-    ui->lineEditCertificatePassword->setText(m_settings->certificatePassword());
+    restoreGUIFromSettings();
 }
 
 void DialogNDNSettings::on_pushButtonRefreshCommunicationParameters_clicked()
@@ -62,4 +60,13 @@ void DialogNDNSettings::on_pushButtonBrowseCertificate_clicked()
     if (!certPath.isEmpty()) {
         ui->lineEditCertificatePath->setText(certPath);
     }
+}
+
+void DialogNDNSettings::restoreGUIFromSettings()
+{
+    ui->shopIDLineEdit->setText(m_settings->shopID());
+    ui->webserviceURLLineEdit->setText(m_settings->webserviceURLBase());
+    ui->lineEditCertificatePath->setText(m_settings->certificatePath());
+    ui->lineEditCertificatePassword->setText(m_settings->certificatePassword());
+    ui->lineEditCashregisterID->setText(m_settings->cashRegisterID());
 }
