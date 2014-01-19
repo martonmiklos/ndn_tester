@@ -72,6 +72,14 @@ NDNSettings::NDNSettings(QObject *parent) :
     }
 }
 
+void NDNSettings::setTransactionCallConfig(const NSTransactions::__TransactionCallConfig & callConfig)
+{
+    m_batchSize = callConfig.batchSize();
+    m_frequencyInMinutes = callConfig.frequency();
+    m_offsetInMinutes = callConfig.offset();
+}
+
+
 void NDNSettings::save()
 {
     m_settings.beginGroup("NDN");

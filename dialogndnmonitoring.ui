@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>647</width>
-    <height>348</height>
+    <width>805</width>
+    <height>654</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>NDN Monitoring dialog (only for development purposes!!!)</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="0">
+   <item row="3" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -26,17 +26,20 @@
    </item>
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabGetDocument">
       <attribute name="title">
        <string>Get document</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
-       <item row="2" column="0">
-        <widget class="QTableView" name="tableViewGetDocument"/>
-       </item>
        <item row="0" column="0">
         <layout class="QGridLayout" name="gridLayout_4">
          <item row="0" column="1">
@@ -57,7 +60,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QComboBox" name="comboBoxMovementType"/>
+          <widget class="NDNMovementTypeComboBox" name="comboBoxMovementType"/>
          </item>
          <item row="0" column="4" rowspan="2">
           <widget class="QPushButton" name="pushButtonGetDocument">
@@ -67,6 +70,19 @@
           </widget>
          </item>
         </layout>
+       </item>
+       <item row="0" column="1">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -98,21 +114,46 @@
            </property>
           </widget>
          </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
         </layout>
-       </item>
-       <item row="1" column="0">
-        <widget class="QTableView" name="tableViewOpeningStock">
-         <attribute name="horizontalHeaderStretchLastSection">
-          <bool>true</bool>
-         </attribute>
-        </widget>
        </item>
       </layout>
      </widget>
     </widget>
    </item>
+   <item row="2" column="0">
+    <widget class="QTreeWidget" name="treeWidgetGetDocument">
+     <property name="columnCount">
+      <number>1</number>
+     </property>
+     <column>
+      <property name="text">
+       <string notr="true">1</string>
+      </property>
+     </column>
+    </widget>
+   </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>NDNMovementTypeComboBox</class>
+   <extends>QComboBox</extends>
+   <header>../ndnwidgets.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

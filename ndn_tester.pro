@@ -67,3 +67,6 @@ KDWSDL =    /home/mm/Projektek/qt/qtrafik/soap/ndn_tester/wsdl/Masterdata.svc \
             /home/mm/Projektek/qt/qtrafik/soap/ndn_tester/wsdl/Monitoring.svc \
             /home/mm/Projektek/qt/qtrafik/soap/ndn_tester/wsdl/Transactions.svc
 
+OTHER_FILES += \
+    Changelog.txt
+

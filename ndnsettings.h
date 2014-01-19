@@ -6,6 +6,8 @@
 #include <QSslConfiguration>
 #include <QStringList>
 
+#include "wsdl_Transactions.h"
+
 class NDNSettingsPrivate
 {
 
@@ -22,6 +24,8 @@ public:
     void setShopID(QString shopID) {m_shopID = shopID;}
     void setWebserviceURLBase(QString webserviceURLBase) {m_webserviceURLBase = webserviceURLBase;}
 
+    // NDN communication interval settings
+    void setTransactionCallConfig(const NSTransactions::__TransactionCallConfig & callConfig);
     quint16 batchSize() const {return m_batchSize;}
     void setBatchSize(quint16 batchSize) {m_batchSize = batchSize;}
 

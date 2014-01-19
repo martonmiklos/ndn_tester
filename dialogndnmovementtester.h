@@ -51,11 +51,22 @@ private slots:
     void on_pushButtonAddItem_clicked();
     void createOpeningStockDone(NSTransactions::TNS__CreateOpeningStockResponse);
     void createOpeningStockError(KDSoapMessage msg);
-    void itemAdded(QString ndnCode, double amount, double nettoPrice, double grossPrice);
 
     void on_pushButtonSubmitSalesDocument_clicked();
+    void createSalesTransactionDone(NSTransactions::TNS__CreateSalesTransactionResponse);
+    void createSalesTransactionError(KDSoapMessage msg);
 
     void on_pushButtonSubmitStockDocument_clicked();
+    void createStockTransactionDone(NSTransactions::TNS__CreateStockTransactionResponse);
+    void createStockTransactionError(KDSoapMessage msg);
+
+    void itemAdded(QString ndnCode, double amount, double nettoPrice, double grossPrice);
+
+    bool validateStockUserInput();
+    bool validateSalesUserInput();
+    bool validateSubmitOpeningStockUserInput();
+
+    void on_stockDocumentMovementTypeComboBox_currentIndexChanged(int);
 
 private:
     Ui::DialogNDNMovementTester *ui;
@@ -63,6 +74,8 @@ private:
     NDNSettings *m_settings;
     DialogAddNDNProducts *productAddDialog;
     MovementReportItemsModel *m_model;
+
+    NSTransactions::__Partner partnerDataFromUI();
 };
 
 #endif // DIALOGNDNMOVEMENTTESTER_H

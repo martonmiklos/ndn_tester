@@ -10,26 +10,36 @@ class NDNReasonCodeComboBox : public QComboBox
 {
     Q_OBJECT
 public:
-    explicit NDNReasonCodeComboBox(QWidget *parent = 0);
-    NSTransactions::__ReasonCode_ReasonCodeEnum movementType();
-
-signals:
-
-public slots:
-
+    explicit NDNReasonCodeComboBox(QWidget *parent = 0, bool allowEmpty = true);
+    NSTransactions::__ReasonCode_ReasonCodeEnum reasonCode();
+    NSTransactions::__ReasonCode_ReasonCodeEnum::Type type();
 };
 
 class NDNMovementTypeComboBox : public QComboBox
 {
     Q_OBJECT
 public:
-    explicit NDNMovementTypeComboBox(QWidget *parent = 0);
+    explicit NDNMovementTypeComboBox(QWidget *parent = 0, bool init = true);
     NSTransactions::__MovementType movementType();
-signals:
-
-public slots:
-
+    NSTransactions::__MovementType::Type type();
+    bool reasonNeeded();
+    bool isStorno();
 };
+
+class NDNSalesMovementTypeComboBox : public NDNMovementTypeComboBox
+{
+    Q_OBJECT
+public:
+    explicit NDNSalesMovementTypeComboBox(QWidget *parent = 0);
+};
+
+class NDNStockMovementTypeComboBox : public NDNMovementTypeComboBox
+{
+    Q_OBJECT
+public:
+    explicit NDNStockMovementTypeComboBox(QWidget *parent = 0);
+};
+
 
 
 #endif // NDNWIDGETS_H

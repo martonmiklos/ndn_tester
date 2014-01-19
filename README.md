@@ -1,7 +1,7 @@
 NDN tester
 =====================
 
-This is an application which had been developed to test the NDN Zrt.'s test webservices.
+This is an application which had been developed to communicate with the NDN Zrt.'s (Hungarian National Tobacco Trading Company) test webservices.
 
 Features:
  - Syncronize the items and the related data from the NDN to a local SQLITE database
@@ -28,6 +28,6 @@ Függőségek:
  - KDSOAP (https://github.com/KDAB/KDSoap)
  - QCA (Qt Cryptographics Architecture: git://anongit.kde.org/qca.git) 
  
-
+A program kizárólag a nyilvántartórendszerek fejlesztése során használatos. 
 
   [1]: http://nemzetidohany.hu/adatszolgaltatas/az-nd-nonprofit-zrt-altal-minositett-keszletnyilvantarto-kiskereskedelmi-rendszerek/

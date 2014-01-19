@@ -40,25 +40,27 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ndnProductFilterDialog = new DialogNDNProductFilters(productsModel, this);
 
-    ui->tableViewProducts->horizontalHeader()->setStretchLastSection(true);
 
     productGroupsModel = new QSqlTableModel(this);
     productGroupsModel->setTable("ndn_productgroups");
     productGroupsModel->select();
     productGroupsModel->setHeaderData(1, Qt::Horizontal, tr("Fixed price"));
     ui->tableViewProductGroups->setModel(productGroupsModel);
-    ui->tableViewProductGroups->horizontalHeader()->setStretchLastSection(true);
 
     manufacturersModel = new QSqlTableModel(this);
     manufacturersModel->setTable("ndn_manufacturers");
     manufacturersModel->select();
     ui->tableViewManufacturers->setModel(manufacturersModel);
-    ui->tableViewManufacturers->horizontalHeader()->setStretchLastSection(true);
+
+    vatRatesModel = new QSqlTableModel(this);
+    vatRatesModel->setTable("ndn_vatrates");
+    vatRatesModel->select();
+    ui->tableViewVATRates->setModel(vatRatesModel);
+
 
     ndnSettingsDialog = new DialogNDNSettings(&ndnSettings, this);
     ndnMonitoringDialog = new DialogNDNMonitoring(&ndnSettings, this);
     ndnMovementTesterDialog = new DialogNDNMovementTester(&ndnSettings, this);
-    ndnMovementTesterDialog->show();
 }
 
 MainWindow::~MainWindow()

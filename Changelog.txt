@@ -1,0 +1,6 @@
+- Separated Stock an Sales MovementTypeCombobox
+- The tableview from the Movement tester dialog's Opening stock tab had been removed both transaction monitoring uses a TreeWidget now.
+- The Submitting of the Sales and Stock documents works now.
+- Added IsStorno and ReasonCodeNeeded flags to the Movementtypes in the database
+- Fixed Movement and ReasonTypeComboBoxes type and reasonCode and movementType members (they had returned with an invalid value)
+- Removed OpeningStockModel as it is not used anymore

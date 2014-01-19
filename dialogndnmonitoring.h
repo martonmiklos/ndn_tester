@@ -11,32 +11,6 @@ namespace Ui {
 class DialogNDNMonitoring;
 }
 
-class OpeningStockModel : public QAbstractTableModel {
-    Q_OBJECT
-
-public:
-
-    struct OpeningStockItem {
-        int lineNo;
-        QString localProductCode, NDNProductCode, name;
-        double quantity;
-    };
-
-    OpeningStockModel(QObject *parent = NULL);
-
-    void clear();
-    void addItem(OpeningStockItem item);
-
-    int rowCount(const QModelIndex &parent) const;
-    int columnCount(const QModelIndex &parent) const;
-
-    QVariant data(const QModelIndex &index, int role) const;
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-
-private:
-    QList<OpeningStockItem> m_items;
-};
-
 class DialogNDNMonitoring : public QDialog
 {
     Q_OBJECT
@@ -60,7 +34,8 @@ private:
     Ui::DialogNDNMonitoring *ui;
     NSMonitoring::Monitoring monitoring;
     NDNSettings *m_settings;
-    OpeningStockModel *m_openingStockModel;
+
+    void setTableContentsToTreeWidget(NSMonitoring::__ArrayOfTableContent table);
 };
 
 #endif // DIALOGNDNMONITORING_H

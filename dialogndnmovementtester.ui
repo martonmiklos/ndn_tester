@@ -37,7 +37,10 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLineEdit" name="referenceLineEdit">
+          <widget class="QLineEdit" name="stockDocumentReferenceLineEdit">
+           <property name="text">
+            <string>1234</string>
+           </property>
            <property name="maxLength">
             <number>50</number>
            </property>
@@ -51,7 +54,7 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QLineEdit" name="stornoReferenceLineEdit">
+          <widget class="QLineEdit" name="stockDocumentStornoReferenceLineEdit">
            <property name="maxLength">
             <number>30</number>
            </property>
@@ -65,7 +68,7 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="NDNMovementTypeComboBox" name="movementTypeComboBox">
+          <widget class="NDNStockMovementTypeComboBox" name="stockDocumentMovementTypeComboBox">
            <property name="maximumSize">
             <size>
              <width>256</width>
@@ -82,7 +85,7 @@
           </widget>
          </item>
          <item row="3" column="1">
-          <widget class="NDNReasonCodeComboBox" name="reasoncodeComboBox">
+          <widget class="NDNReasonCodeComboBox" name="stockDocumentReasoncodeComboBox">
            <property name="maximumSize">
             <size>
              <width>256</width>
@@ -99,7 +102,7 @@
           </widget>
          </item>
          <item row="4" column="1">
-          <widget class="QDateTimeEdit" name="issuedOnDateTimeEdit"/>
+          <widget class="QDateTimeEdit" name="stockDocumentIssuedOnDateTimeEdit"/>
          </item>
          <item row="5" column="0">
           <widget class="QLabel" name="documentDateLabel">
@@ -109,7 +112,7 @@
           </widget>
          </item>
          <item row="5" column="1">
-          <widget class="QDateTimeEdit" name="documentDateDateTimeEdit"/>
+          <widget class="QDateTimeEdit" name="stockDocumentDateDateTimeEdit"/>
          </item>
          <item row="6" column="0">
           <widget class="QLabel" name="commentLabel">
@@ -119,10 +122,10 @@
           </widget>
          </item>
          <item row="6" column="1">
-          <widget class="QLineEdit" name="commentLineEdit"/>
+          <widget class="QLineEdit" name="stockDocumentCommentLineEdit"/>
          </item>
          <item row="7" column="1">
-          <widget class="QLineEdit" name="reasonLineEdit"/>
+          <widget class="QLineEdit" name="stockDocumentReasonLineEdit"/>
          </item>
          <item row="7" column="0">
           <widget class="QLabel" name="reasonLabel">
@@ -160,7 +163,11 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLineEdit" name="salesDocumentReferenceLineEdit"/>
+          <widget class="QLineEdit" name="salesDocumentReferenceLineEdit">
+           <property name="text">
+            <string>1234</string>
+           </property>
+          </widget>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="stornoReferenceLabel_2">
@@ -170,12 +177,22 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QLineEdit" name="salesStornoReferenceLineEdit"/>
+          <widget class="QLineEdit" name="salesDocumentStornoReferenceLineEdit"/>
          </item>
          <item row="2" column="0">
           <widget class="QLabel" name="movementTypeLabel_2">
            <property name="text">
             <string>Movement type</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="NDNSalesMovementTypeComboBox" name="salesDocumentMovementTypeComboBox">
+           <property name="maximumSize">
+            <size>
+             <width>256</width>
+             <height>16777215</height>
+            </size>
            </property>
           </widget>
          </item>
@@ -207,9 +224,19 @@
           </widget>
          </item>
          <item row="5" column="1">
-          <widget class="QDateTimeEdit" name="dueDateDateTimeEdit"/>
+          <widget class="QDateTimeEdit" name="salesDocumentDueDateDateTimeEdit"/>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="commentLabel_2">
+           <property name="text">
+            <string>Comment</string>
+           </property>
+          </widget>
          </item>
          <item row="6" column="1">
+          <widget class="QLineEdit" name="salesDocumentCommentLineEdit"/>
+         </item>
+         <item row="7" column="1">
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -221,16 +248,6 @@
             </size>
            </property>
           </spacer>
-         </item>
-         <item row="2" column="1">
-          <widget class="NDNMovementTypeComboBox" name="salesDocumentMovementTypecomboBox">
-           <property name="maximumSize">
-            <size>
-             <width>256</width>
-             <height>16777215</height>
-            </size>
-           </property>
-          </widget>
          </item>
         </layout>
        </item>
@@ -332,6 +349,9 @@
         </item>
         <item row="0" column="1">
          <widget class="QLineEdit" name="localPartnerCodeLineEdit">
+          <property name="text">
+           <string>1</string>
+          </property>
           <property name="maxLength">
            <number>20</number>
           </property>
@@ -346,6 +366,9 @@
         </item>
         <item row="1" column="1">
          <widget class="QLineEdit" name="partnerNameLineEdit">
+          <property name="text">
+           <string>Mézga Géza</string>
+          </property>
           <property name="maxLength">
            <number>200</number>
           </property>
@@ -360,6 +383,9 @@
         </item>
         <item row="2" column="1">
          <widget class="QLineEdit" name="partnerCityLineEdit">
+          <property name="text">
+           <string>Mucsaröcsöge</string>
+          </property>
           <property name="maxLength">
            <number>50</number>
           </property>
@@ -374,6 +400,9 @@
         </item>
         <item row="3" column="1">
          <widget class="QLineEdit" name="partnerPostcodeLineEdit">
+          <property name="text">
+           <string>4242</string>
+          </property>
           <property name="maxLength">
            <number>4</number>
           </property>
@@ -388,6 +417,9 @@
         </item>
         <item row="4" column="1">
          <widget class="QLineEdit" name="partnerStreetLineEdit">
+          <property name="text">
+           <string>Balos utca 13.</string>
+          </property>
           <property name="maxLength">
            <number>50</number>
           </property>
@@ -417,7 +449,12 @@
    <header>../ndnwidgets.h</header>
   </customwidget>
   <customwidget>
-   <class>NDNMovementTypeComboBox</class>
+   <class>NDNSalesMovementTypeComboBox</class>
+   <extends>QComboBox</extends>
+   <header>../ndnwidgets.h</header>
+  </customwidget>
+  <customwidget>
+   <class>NDNStockMovementTypeComboBox</class>
    <extends>QComboBox</extends>
    <header>../ndnwidgets.h</header>
   </customwidget>
