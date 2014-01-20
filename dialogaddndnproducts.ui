@@ -14,6 +14,29 @@
    <string>Select product</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="9" column="0" colspan="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
    <item row="2" column="1">
     <widget class="QDoubleSpinBox" name="doubleSpinBoxAmount">
      <property name="value">
@@ -35,30 +58,7 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="0" colspan="2">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="1">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="0" column="0" rowspan="8">
+   <item row="0" column="0" rowspan="9">
     <widget class="QTableView" name="tableViewProducts">
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>
@@ -77,10 +77,10 @@
      </attribute>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QLabel" name="label">
+   <item row="3" column="1">
+    <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>Amount:</string>
+      <string>Netto price:</string>
      </property>
     </widget>
    </item>
@@ -91,10 +91,10 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QLabel" name="label_2">
+   <item row="1" column="1">
+    <widget class="QLabel" name="label">
      <property name="text">
-      <string>Netto price:</string>
+      <string>Amount:</string>
      </property>
     </widget>
    </item>
@@ -102,6 +102,13 @@
     <widget class="QDoubleSpinBox" name="doubleSpinBoxGrossPrice">
      <property name="maximum">
       <double>99990000.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="1">
+    <widget class="QPushButton" name="pushButtonAdd">
+     <property name="text">
+      <string>Add</string>
      </property>
     </widget>
    </item>

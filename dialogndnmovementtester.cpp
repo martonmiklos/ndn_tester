@@ -141,7 +141,7 @@ DialogNDNMovementTester::~DialogNDNMovementTester()
 
 void DialogNDNMovementTester::on_pushButtonRemoveItem_clicked()
 {
-
+    // TODO
 }
 
 void DialogNDNMovementTester::on_pushButtonAddItem_clicked()
@@ -245,7 +245,7 @@ void DialogNDNMovementTester::createOpeningStockDone(NSTransactions::TNS__Create
 
 void DialogNDNMovementTester::createOpeningStockError(KDSoapMessage msg)
 {
-
+    qWarning() << "createOpeningStockError" << msg.toXml();
 }
 
 void DialogNDNMovementTester::on_pushButtonSubmitSalesDocument_clicked()
@@ -578,6 +578,6 @@ void DialogNDNMovementTester::createStockTransactionDone(NSTransactions::TNS__Cr
 
 void DialogNDNMovementTester::createStockTransactionError(KDSoapMessage msg)
 {
-    qWarning() << "createStockTransactionError";
+    qWarning() << "createStockTransactionError" << msg.toXml();
 }
 

@@ -23,6 +23,8 @@ private slots:
     void on_tableViewProducts_doubleClicked(const QModelIndex &index);
     void on_tableViewProducts_clicked(const QModelIndex &index);
 
+    void on_pushButtonAdd_clicked();
+    
 signals:
     void itemSelected(QString ndnCode, double amount, double netPrice, double brutPrice);
 
