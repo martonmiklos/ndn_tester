@@ -109,21 +109,21 @@ DialogNDNMovementTester::DialogNDNMovementTester(NDNSettings *settings, QWidget 
     ui->openingStockDateDateTimeEdit->setDateTime(QDateTime::currentDateTime());
 
     transactions.clientInterface()->setSslConfiguration(settings->sslConfiguration());
-    transactions.clientInterface()->setUsingAddressing(true);
+    //transactions.clientInterface()->setUsingAddressing(true);
     transactions.setEndPoint(settings->webserviceURLBase()+"Transactions.svc");
 
-    connect(&transactions, SIGNAL(createOpeningStockDone(NSTransactions::TNS__CreateOpeningStockResponse)),
-            this , SLOT(createOpeningStockDone(NSTransactions::TNS__CreateOpeningStockResponse)));
+    connect(&transactions, SIGNAL(createOpeningStockDone(NSTransactions::NDN_COMM__CreateOpeningStockResponse)),
+            this , SLOT(createOpeningStockDone(NSTransactions::NDN_COMM__CreateOpeningStockResponse)));
     connect(&transactions, SIGNAL(createOpeningStockError(KDSoapMessage)),
             this, SLOT(createOpeningStockError(KDSoapMessage)));
 
-    connect(&transactions, SIGNAL(createSalesTransactionDone(NSTransactions::TNS__CreateSalesTransactionResponse)),
-            this , SLOT(createSalesTransactionDone(NSTransactions::TNS__CreateSalesTransactionResponse)));
+    connect(&transactions, SIGNAL(createSalesTransactionDone(NSTransactions::NDN_COMM__CreateSalesTransactionResponse)),
+            this , SLOT(createSalesTransactionDone(NSTransactions::NDN_COMM__CreateSalesTransactionResponse)));
     connect(&transactions, SIGNAL(createSalesTransactionError(KDSoapMessage)),
             this, SLOT(createSalesTransactionError(KDSoapMessage)));
 
-    connect(&transactions, SIGNAL(createStockTransactionDone(NSTransactions::TNS__CreateStockTransactionResponse)),
-            this , SLOT(createStockTransactionDone(NSTransactions::TNS__CreateStockTransactionResponse)));
+    connect(&transactions, SIGNAL(createStockTransactionDone(NSTransactions::NDN_COMM__CreateStockTransactionResponse)),
+            this , SLOT(createStockTransactionDone(NSTransactions::NDN_COMM__CreateStockTransactionResponse)));
     connect(&transactions, SIGNAL(createStockTransactionError(KDSoapMessage)),
             this, SLOT(createStockTransactionError(KDSoapMessage)));
 
@@ -155,9 +155,9 @@ void DialogNDNMovementTester::itemAdded(QString ndnCode, double amount, double n
     ui->tableViewItems->reset();
 }
 
-NSTransactions::__Partner DialogNDNMovementTester::partnerDataFromUI()
+NSTransactions::NDN__Partner DialogNDNMovementTester::partnerDataFromUI()
 {
-    NSTransactions::__Partner partner;
+    NSTransactions::NDN__Partner partner;
     partner.setLocalPartnerCode(ui->localPartnerCodeLineEdit->text());
     partner.setName(ui->partnerNameLineEdit->text());
     partner.setCity(ui->partnerCityLineEdit->text());
@@ -190,10 +190,10 @@ void DialogNDNMovementTester::on_stockDocumentMovementTypeComboBox_currentIndexC
 
 void DialogNDNMovementTester::on_pushButtonOpeningStock_clicked()
 {
-    NSTransactions::TNS__CreateOpeningStock createOpeningStockRequest;
+    NSTransactions::NDN_COMM__CreateOpeningStock createOpeningStockRequest;
     createOpeningStockRequest.setShopId(m_settings->shopID());
 
-    NSTransactions::__OpeningStock openingStockDocument;
+    NSTransactions::NDN__OpeningStock openingStockDocument;
 
     // zero  out the msec part of the timestamp
     QDateTime created = ui->openingStockDateDateTimeEdit->dateTime();
@@ -203,10 +203,10 @@ void DialogNDNMovementTester::on_pushButtonOpeningStock_clicked()
 
     openingStockDocument.setShopId(m_settings->shopID());
 
-    QList<NSTransactions::__OpeningStockLine> openingStockLines;
+    QList<NSTransactions::NDN__OpeningStockLine> openingStockLines;
 
     for (int row = 0; row<m_model->rowCount(QModelIndex()); row++) {
-        NSTransactions::__OpeningStockLine openingStockLine;
+        NSTransactions::NDN__OpeningStockLine openingStockLine;
         openingStockLine.setLineNo(row);
         QString NDNCode = m_model->data(m_model->index(row, 0), Qt::DisplayRole).toString();
         openingStockLine.setProductCode(NDNCode); // NDNcode
@@ -227,7 +227,7 @@ void DialogNDNMovementTester::on_pushButtonOpeningStock_clicked()
         }
         openingStockLines.append(openingStockLine);
     }
-    NSTransactions::__ArrayOfOpeningStockLine lines;
+    NSTransactions::NDN__ArrayOfOpeningStockLine lines;
     lines.setOpeningStockLine(openingStockLines);
     openingStockDocument.setLines(lines);
 
@@ -235,10 +235,10 @@ void DialogNDNMovementTester::on_pushButtonOpeningStock_clicked()
     transactions.asyncCreateOpeningStock(createOpeningStockRequest);
 }
 
-void DialogNDNMovementTester::createOpeningStockDone(NSTransactions::TNS__CreateOpeningStockResponse response)
+void DialogNDNMovementTester::createOpeningStockDone(NSTransactions::NDN_COMM__CreateOpeningStockResponse response)
 {
     m_settings->setTransactionCallConfig(response.createOpeningStockResult().currentConfig());
-    foreach (NSTransactions::__ResponseCode responseCode, response.createOpeningStockResult().responseCodes().responseCode()) {
+    foreach (NSTransactions::NDN__ResponseCode responseCode, response.createOpeningStockResult().responseCodes().responseCode()) {
         qWarning() << responseCode.code() << responseCode.key() << responseCode.message();
     }
 }
@@ -251,11 +251,11 @@ void DialogNDNMovementTester::createOpeningStockError(KDSoapMessage msg)
 void DialogNDNMovementTester::on_pushButtonSubmitSalesDocument_clicked()
 {
     float VATSum = 0.0f, grossSum = 0.0f;
-    QList<NSTransactions::__SalesDocumentLine> salesDocumentLineItems;
-    QList<NSTransactions::__DocumentVatBreakDown> VATBreakDownItems;
+    QList<NSTransactions::NDN__SalesDocumentLine> salesDocumentLineItems;
+    QList<NSTransactions::NDN__DocumentVatBreakDown> VATBreakDownItems;
 
     for (int row = 0; row<m_model->rowCount(QModelIndex()); row++) { // loop through the adde products and create the SOAP message
-        NSTransactions::__SalesDocumentLine salesDocumentLine;
+        NSTransactions::NDN__SalesDocumentLine salesDocumentLine;
         QString NDNCode = m_model->data(m_model->index(row, 0), Qt::DisplayRole).toString();
         double quantity = m_model->data(m_model->index(row, 1), Qt::DisplayRole).toDouble();
         double netListPrice = m_model->data(m_model->index(row, 2), Qt::DisplayRole).toDouble();
@@ -274,7 +274,7 @@ void DialogNDNMovementTester::on_pushButtonSubmitSalesDocument_clicked()
         getProductInfoQuery.bindValue(":Code", NDNCode);
         if (getProductInfoQuery.exec() && getProductInfoQuery.next())  {
             double VATValue = grossPrice*(getProductInfoQuery.value("VATPercent").toDouble()/100);
-            NSTransactions::__VATCode itemVATCode((NSTransactions::__VATCode::Type)getProductInfoQuery.value("VATCode").toInt());
+            NSTransactions::NDN__VATCode itemVATCode((NSTransactions::NDN__VATCode::Type)getProductInfoQuery.value("VATCode").toInt());
 
             salesDocumentLine.setLineNo(row);
             salesDocumentLine.setLocalProductCode(getProductInfoQuery.value("LocalProductCode").toString());
@@ -293,7 +293,7 @@ void DialogNDNMovementTester::on_pushButtonSubmitSalesDocument_clicked()
             salesDocumentLine.setVATLineTotal(VATValue*quantity);
             salesDocumentLine.setProductStockPrice(grossPrice);
             salesDocumentLine.setGrossConsumerPrice(grossPrice);
-            salesDocumentLine.setExciseCategory(NSTransactions::__ExciseCategory((NSTransactions::__ExciseCategory::Type)getProductInfoQuery.value("ExciseCategory").toInt()));
+            salesDocumentLine.setExciseCategory(NSTransactions::NDN__ExciseCategory((NSTransactions::NDN__ExciseCategory::Type)getProductInfoQuery.value("ExciseCategory").toInt()));
             salesDocumentLine.setProductBarCode(getProductInfoQuery.value("ProductBarcode").toString());
             salesDocumentLine.setProductBarCode(getProductInfoQuery.value("PackagingQuantity").toString());
             salesDocumentLine.setProductBarCode(getProductInfoQuery.value("PackagingUnitOfMeasure").toString());
@@ -304,7 +304,7 @@ void DialogNDNMovementTester::on_pushButtonSubmitSalesDocument_clicked()
             VATSum += VATValue * quantity;
 
             bool VATFound = false;
-            for (QList<NSTransactions::__DocumentVatBreakDown>::iterator i = VATBreakDownItems.begin(); i != VATBreakDownItems.end(); ++i) {
+            for (QList<NSTransactions::NDN__DocumentVatBreakDown>::iterator i = VATBreakDownItems.begin(); i != VATBreakDownItems.end(); ++i) {
                 if ((*i).vATCode().type() == itemVATCode.type()) {
                     VATFound = true;
                     (*i).setVATAmount((*i).vATAmount() + VATSum);
@@ -314,7 +314,7 @@ void DialogNDNMovementTester::on_pushButtonSubmitSalesDocument_clicked()
             }
 
             if (VATFound == false) {
-                NSTransactions::__DocumentVatBreakDown VATBreakDownItem;
+                NSTransactions::NDN__DocumentVatBreakDown VATBreakDownItem;
                 VATBreakDownItem.setVATCode(itemVATCode);
                 VATBreakDownItem.setNetAmount(netListPrice * quantity);
                 VATBreakDownItem.setVATAmount(VATSum);
@@ -358,8 +358,8 @@ void DialogNDNMovementTester::on_pushButtonSubmitSalesDocument_clicked()
                 localDocumentID = query.value("LocalDocumentID").toString();
         }
 
-        QList<NSTransactions::__SalesDocument> salesDocuments;
-        NSTransactions::__SalesDocument salesDocument;
+        QList<NSTransactions::NDN__SalesDocument> salesDocuments;
+        NSTransactions::NDN__SalesDocument salesDocument;
         salesDocument.setShopId(m_settings->shopID());
         salesDocument.setLocalDocumentId(localDocumentID);
         salesDocument.setCashRegId(m_settings->cashRegisterID());
@@ -378,18 +378,18 @@ void DialogNDNMovementTester::on_pushButtonSubmitSalesDocument_clicked()
         salesDocument.setVAT(VATSum);
         salesDocument.setComment(ui->salesDocumentCommentLineEdit->text());
 
-        NSTransactions::__ArrayOfSalesDocumentLine lines;
+        NSTransactions::NDN__ArrayOfSalesDocumentLine lines;
         lines.setSalesDocumentLine(salesDocumentLineItems);
 
         salesDocument.setLines(lines);
 
-        NSTransactions::__ArrayOfDocumentVatBreakDown VATBreakDown;
+        NSTransactions::NDN__ArrayOfDocumentVatBreakDown VATBreakDown;
         VATBreakDown.setDocumentVatBreakDown(VATBreakDownItems);
         salesDocument.setVATBreakDown(VATBreakDown);
         salesDocuments.append(salesDocument);
 
-        NSTransactions::TNS__CreateSalesTransaction transaction;
-        NSTransactions::__ArrayOfSalesDocument documents;
+        NSTransactions::NDN_COMM__CreateSalesTransaction transaction;
+        NSTransactions::NDN__ArrayOfSalesDocument documents;
         documents.setSalesDocument(salesDocuments);
         transaction.setDocuments(documents);
         transaction.setShopId(m_settings->shopID());
@@ -399,11 +399,11 @@ void DialogNDNMovementTester::on_pushButtonSubmitSalesDocument_clicked()
     }
 }
 
-void DialogNDNMovementTester::createSalesTransactionDone(NSTransactions::TNS__CreateSalesTransactionResponse response)
+void DialogNDNMovementTester::createSalesTransactionDone(NSTransactions::NDN_COMM__CreateSalesTransactionResponse response)
 {
     qWarning() << "createSalesTransactionDone";
     m_settings->setTransactionCallConfig(response.createSalesTransactionResult().currentConfig());
-    foreach (NSTransactions::__ResponseCode responseCode, response.createSalesTransactionResult().responseCodes().responseCode()) {
+    foreach (NSTransactions::NDN__ResponseCode responseCode, response.createSalesTransactionResult().responseCodes().responseCode()) {
         qWarning() << responseCode.code() << responseCode.message();
     }
 }
@@ -417,11 +417,11 @@ void DialogNDNMovementTester::createSalesTransactionError(KDSoapMessage msg)
 void DialogNDNMovementTester::on_pushButtonSubmitStockDocument_clicked()
 {
     float VATSum = 0.0f, grossSum = 0.0f;
-    QList<NSTransactions::__StockDocumentLine> stockDocumentLineItems;
-    QList<NSTransactions::__DocumentVatBreakDown> VATBreakDownItems;
+    QList<NSTransactions::NDN__StockDocumentLine> stockDocumentLineItems;
+    QList<NSTransactions::NDN__DocumentVatBreakDown> VATBreakDownItems;
 
     for (int row = 0; row<m_model->rowCount(QModelIndex()); row++) { // loop through the adde products and create the SOAP message
-        NSTransactions::__StockDocumentLine stockDocumentLine;
+        NSTransactions::NDN__StockDocumentLine stockDocumentLine;
         QString NDNCode = m_model->data(m_model->index(row, 0), Qt::DisplayRole).toString();
         double quantity = m_model->data(m_model->index(row, 1), Qt::DisplayRole).toDouble();
         double netListPrice = m_model->data(m_model->index(row, 2), Qt::DisplayRole).toDouble();
@@ -440,7 +440,7 @@ void DialogNDNMovementTester::on_pushButtonSubmitStockDocument_clicked()
         getProductInfoQuery.bindValue(":Code", NDNCode);
         if (getProductInfoQuery.exec() && getProductInfoQuery.next())  {
             double VATValue = grossPrice*(getProductInfoQuery.value("VATPercent").toDouble()/100);
-            NSTransactions::__VATCode itemVATCode((NSTransactions::__VATCode::Type)getProductInfoQuery.value("VATCode").toInt());
+            NSTransactions::NDN__VATCode itemVATCode((NSTransactions::NDN__VATCode::Type)getProductInfoQuery.value("VATCode").toInt());
 
             stockDocumentLine.setLineNo(row);
             stockDocumentLine.setLocalProductCode(getProductInfoQuery.value("LocalProductCode").toString());
@@ -459,7 +459,7 @@ void DialogNDNMovementTester::on_pushButtonSubmitStockDocument_clicked()
             stockDocumentLine.setVATLineTotal(VATValue*quantity);
             stockDocumentLine.setProductStockPrice(grossPrice);
             stockDocumentLine.setGrossConsumerPrice(grossPrice);
-            stockDocumentLine.setExciseCategory(NSTransactions::__ExciseCategory((NSTransactions::__ExciseCategory::Type)getProductInfoQuery.value("ExciseCategory").toInt()));
+            stockDocumentLine.setExciseCategory(NSTransactions::NDN__ExciseCategory((NSTransactions::NDN__ExciseCategory::Type)getProductInfoQuery.value("ExciseCategory").toInt()));
             stockDocumentLine.setProductBarCode(getProductInfoQuery.value("ProductBarcode").toString());
             stockDocumentLine.setProductBarCode(getProductInfoQuery.value("PackagingQuantity").toString());
             stockDocumentLine.setProductBarCode(getProductInfoQuery.value("PackagingUnitOfMeasure").toString());
@@ -470,7 +470,7 @@ void DialogNDNMovementTester::on_pushButtonSubmitStockDocument_clicked()
             VATSum += VATValue * quantity;
 
             bool VATFound = false;
-            for (QList<NSTransactions::__DocumentVatBreakDown>::iterator i = VATBreakDownItems.begin(); i != VATBreakDownItems.end(); ++i) {
+            for (QList<NSTransactions::NDN__DocumentVatBreakDown>::iterator i = VATBreakDownItems.begin(); i != VATBreakDownItems.end(); ++i) {
                 if ((*i).vATCode().type() == itemVATCode.type()) {
                     VATFound = true;
                     (*i).setVATAmount((*i).vATAmount() + VATSum);
@@ -480,7 +480,7 @@ void DialogNDNMovementTester::on_pushButtonSubmitStockDocument_clicked()
             }
 
             if (VATFound == false) {
-                NSTransactions::__DocumentVatBreakDown VATBreakDownItem;
+                NSTransactions::NDN__DocumentVatBreakDown VATBreakDownItem;
                 VATBreakDownItem.setVATCode(itemVATCode);
                 VATBreakDownItem.setNetAmount(netListPrice * quantity);
                 VATBreakDownItem.setVATAmount(VATSum);
@@ -524,8 +524,8 @@ void DialogNDNMovementTester::on_pushButtonSubmitStockDocument_clicked()
                 localDocumentID = query.value("LocalDocumentID").toString();
         }
 
-        QList<NSTransactions::__StockDocument> stockDocuments;
-        NSTransactions::__StockDocument stockDocument;
+        QList<NSTransactions::NDN__StockDocument> stockDocuments;
+        NSTransactions::NDN__StockDocument stockDocument;
         stockDocument.setShopId(m_settings->shopID());
         stockDocument.setLocalDocumentId(localDocumentID);
         stockDocument.setReference(ui->stockDocumentReferenceLineEdit->text());
@@ -544,18 +544,18 @@ void DialogNDNMovementTester::on_pushButtonSubmitStockDocument_clicked()
         stockDocument.setVAT(VATSum);
         stockDocument.setComment(ui->stockDocumentCommentLineEdit->text());
 
-        NSTransactions::__ArrayOfStockDocumentLine lines;
+        NSTransactions::NDN__ArrayOfStockDocumentLine lines;
         lines.setStockDocumentLine(stockDocumentLineItems);
 
         stockDocument.setLines(lines);
 
-        NSTransactions::__ArrayOfDocumentVatBreakDown VATBreakDown;
+        NSTransactions::NDN__ArrayOfDocumentVatBreakDown VATBreakDown;
         VATBreakDown.setDocumentVatBreakDown(VATBreakDownItems);
         stockDocument.setVATBreakDown(VATBreakDown);
         stockDocuments.append(stockDocument);
 
-        NSTransactions::TNS__CreateStockTransaction transaction;
-        NSTransactions::__ArrayOfStockDocument documents;
+        NSTransactions::NDN_COMM__CreateStockTransaction transaction;
+        NSTransactions::NDN__ArrayOfStockDocument documents;
         documents.setStockDocument(stockDocuments);
         transaction.setDocuments(documents);
         transaction.setShopId(m_settings->shopID());
@@ -567,11 +567,11 @@ void DialogNDNMovementTester::on_pushButtonSubmitStockDocument_clicked()
     }
 }
 
-void DialogNDNMovementTester::createStockTransactionDone(NSTransactions::TNS__CreateStockTransactionResponse response)
+void DialogNDNMovementTester::createStockTransactionDone(NSTransactions::NDN_COMM__CreateStockTransactionResponse response)
 {
     qWarning() << "createStockTransactionDone";
     m_settings->setTransactionCallConfig(response.createStockTransactionResult().currentConfig());
-    foreach (NSTransactions::__ResponseCode responseCode, response.createStockTransactionResult().responseCodes().responseCode()) {
+    foreach (NSTransactions::NDN__ResponseCode responseCode, response.createStockTransactionResult().responseCodes().responseCode()) {
         qWarning() << responseCode.code() << responseCode.key() << responseCode.message();
     }
 }

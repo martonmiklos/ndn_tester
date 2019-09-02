@@ -1,0 +1,3 @@
+[submodule "KDSoap"]
+	path = KDSoap
+	url = https://github.com/KDAB/KDSoap.git

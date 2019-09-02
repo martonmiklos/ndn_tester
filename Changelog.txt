@@ -4,3 +4,7 @@
 - Added IsStorno and ReasonCodeNeeded flags to the Movementtypes in the database
 - Fixed Movement and ReasonTypeComboBoxes type and reasonCode and movementType members (they had returned with an invalid value)
 - Removed OpeningStockModel as it is not used anymore
+
+2019-09-02
+- Regenerated WSDL files
+- Include KDSoap as submodule

@@ -4,7 +4,7 @@
 #include <QDialog>
 #include "ndnsettings.h"
 #include "dialogaddndnproducts.h"
-#include "wsdl_Transactions.h"
+#include "gen_src/Transactions.h"
 
 namespace Ui {
 class DialogNDNMovementTester;
@@ -18,7 +18,7 @@ class MovementReportItemsModel :public QAbstractTableModel {
     };
 
 public:
-    explicit MovementReportItemsModel(QObject *parent = NULL);
+    explicit MovementReportItemsModel(QObject *parent = nullptr);
     void addItem(QString ndnCode, double amount, double nettoPrice, double grossPrice);
 
     int columnCount(const QModelIndex &parent) const;
@@ -49,15 +49,15 @@ private slots:
     void on_pushButtonRemoveItem_clicked();
 
     void on_pushButtonAddItem_clicked();
-    void createOpeningStockDone(NSTransactions::TNS__CreateOpeningStockResponse);
+    void createOpeningStockDone(NSTransactions::NDN_COMM__CreateOpeningStockResponse);
     void createOpeningStockError(KDSoapMessage msg);
 
     void on_pushButtonSubmitSalesDocument_clicked();
-    void createSalesTransactionDone(NSTransactions::TNS__CreateSalesTransactionResponse);
+    void createSalesTransactionDone(NSTransactions::NDN_COMM__CreateSalesTransactionResponse);
     void createSalesTransactionError(KDSoapMessage msg);
 
     void on_pushButtonSubmitStockDocument_clicked();
-    void createStockTransactionDone(NSTransactions::TNS__CreateStockTransactionResponse);
+    void createStockTransactionDone(NSTransactions::NDN_COMM__CreateStockTransactionResponse);
     void createStockTransactionError(KDSoapMessage msg);
 
     void itemAdded(QString ndnCode, double amount, double nettoPrice, double grossPrice);
@@ -75,7 +75,7 @@ private:
     DialogAddNDNProducts *productAddDialog;
     MovementReportItemsModel *m_model;
 
-    NSTransactions::__Partner partnerDataFromUI();
+    NSTransactions::NDN__Partner partnerDataFromUI();
 };
 
 #endif // DIALOGNDNMOVEMENTTESTER_H

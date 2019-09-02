@@ -51,7 +51,6 @@ void DialogAddNDNProducts::on_tableViewProducts_clicked(const QModelIndex &index
 
 void DialogAddNDNProducts::on_pushButtonAdd_clicked()
 {
-    // TODO
     if (ui->tableViewProducts->selectionModel()->hasSelection()) {
         QModelIndex codeIndex = m_model->index(ui->tableViewProducts->selectionModel()->selectedRows().first().row(), 0);
         on_tableViewProducts_doubleClicked(codeIndex);

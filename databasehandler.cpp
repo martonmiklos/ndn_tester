@@ -22,7 +22,7 @@ void DataBaseHandler::init()
     }
 }
 
-bool DataBaseHandler::addVATRate(NSMasterData::__VATRate result)
+bool DataBaseHandler::addVATRate(NSMasterData::NDN__VATRate result)
 {
     QSqlQuery query;
     query.prepare("INSERT INTO ndn_vatrates"
@@ -40,7 +40,7 @@ bool DataBaseHandler::addVATRate(NSMasterData::__VATRate result)
 }
 
 
-bool DataBaseHandler::addManufacturer(NSMasterData::__Manufacturer result)
+bool DataBaseHandler::addManufacturer(NSMasterData::NDN__Manufacturer result)
 {
     QSqlQuery query;
     query.prepare("INSERT INTO ndn_manufacturers"
@@ -53,7 +53,7 @@ bool DataBaseHandler::addManufacturer(NSMasterData::__Manufacturer result)
 }
 
 
-bool DataBaseHandler::addProductGroup(NSMasterData::__ProductGroup result)
+bool DataBaseHandler::addProductGroup(NSMasterData::NDN__ProductGroup result)
 {
     QSqlQuery query;
     query.prepare("INSERT INTO ndn_productgroups"
@@ -66,7 +66,7 @@ bool DataBaseHandler::addProductGroup(NSMasterData::__ProductGroup result)
     return executeQuery(query);
 }
 
-bool DataBaseHandler::addProduct(NSMasterData::__Product result)
+bool DataBaseHandler::addProduct(NSMasterData::NDN__Product result)
 {
     qWarning() << result.name();
     QSqlQuery query;
@@ -91,7 +91,7 @@ bool DataBaseHandler::addProduct(NSMasterData::__Product result)
     return executeQuery(query);
 }
 
-bool DataBaseHandler::addProductPrice(NSMasterData::__ProductPrice result)
+bool DataBaseHandler::addProductPrice(NSMasterData::NDN__ProductPrice result)
 {
     QSqlQuery query;
     query.prepare("INSERT INTO ndn_productprices"
@@ -107,7 +107,7 @@ bool DataBaseHandler::addProductPrice(NSMasterData::__ProductPrice result)
     return executeQuery(query);
 }
 
-bool DataBaseHandler::addProductPackagingUnit(NSMasterData::__ProductPackagingUnit result)
+bool DataBaseHandler::addProductPackagingUnit(NSMasterData::NDN__ProductPackagingUnit result)
 {
     QSqlQuery query;
     query.prepare("INSERT INTO ndn_productpackagingunits"

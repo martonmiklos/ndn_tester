@@ -6,7 +6,7 @@
 #include <QSslConfiguration>
 #include <QStringList>
 
-#include "wsdl_Transactions.h"
+#include "gen_src/Transactions.h"
 
 class NDNSettingsPrivate
 {
@@ -17,7 +17,7 @@ class NDNSettings : public QObject
 {
     Q_OBJECT
 public:
-    explicit NDNSettings(QObject *parent = 0);
+    explicit NDNSettings(QObject *parent = nullptr);
     QString shopID() const {return m_shopID;}
     QString webserviceURLBase() const {return m_webserviceURLBase;}
 
@@ -25,7 +25,7 @@ public:
     void setWebserviceURLBase(QString webserviceURLBase) {m_webserviceURLBase = webserviceURLBase;}
 
     // NDN communication interval settings
-    void setTransactionCallConfig(const NSTransactions::__TransactionCallConfig & callConfig);
+    void setTransactionCallConfig(const NSTransactions::NDN__TransactionCallConfig & callConfig);
     quint16 batchSize() const {return m_batchSize;}
     void setBatchSize(quint16 batchSize) {m_batchSize = batchSize;}
 

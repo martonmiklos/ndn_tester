@@ -7,7 +7,7 @@
 #include <QSqlQueryModel>
 #include <QSqlTableModel>
 
-#include "wsdl_MasterData.h"
+#include "gen_src/Monitoring.h"
 #include "databasehandler.h"
 #include "ndnproductsmodel.h"
 #include "ndnsettings.h"
@@ -34,10 +34,10 @@ private slots:
     void on_pushButtonGetProducts_clicked();
 
     void on_pushButtonGetManufacturers_clicked();
-    void getManufacturersDone(NSMasterData::TNS__GetManufacturersResponse);
-    void getProductsDone(NSMasterData::TNS__GetProductsResponse);
-    void getVATRatesDone(NSMasterData::TNS__GetCurrentVATRatesResponse);
-    void getProductGroupsDone(NSMasterData::TNS__GetProductGroupsResponse response);
+    void getManufacturersDone(NSMasterData::NDN_COMM__GetManufacturersResponse);
+    void getProductsDone(NSMasterData::NDN_COMM__GetProductsResponse);
+    void getVATRatesDone(NSMasterData::NDN_COMM__GetCurrentVATRatesResponse);
+    void getProductGroupsDone(NSMasterData::NDN_COMM__GetProductGroupsResponse response);
     void on_pushButtonGetVATRates_clicked();
 
     void on_pushButtonGetProductGroups_clicked();

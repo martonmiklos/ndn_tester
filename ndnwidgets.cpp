@@ -15,17 +15,17 @@ NDNReasonCodeComboBox::NDNReasonCodeComboBox(QWidget *parent, bool allowEmpty) :
     }
 }
 
-NSTransactions::__ReasonCode_ReasonCodeEnum NDNReasonCodeComboBox::reasonCode()
+NSTransactions::NDN__ReasonCode_ReasonCodeEnum NDNReasonCodeComboBox::reasonCode()
 {
-    NSTransactions::__ReasonCode_ReasonCodeEnum ret;
-    ret.deserialize(this->itemData(this->currentIndex()));
+    NSTransactions::NDN__ReasonCode_ReasonCodeEnum ret;
+    //ret.deserialize(this->itemData(this->currentIndex()));
     return ret;
 }
 
-NSTransactions::__ReasonCode_ReasonCodeEnum::Type NDNReasonCodeComboBox::type()
+NSTransactions::NDN__ReasonCode_ReasonCodeEnum::Type NDNReasonCodeComboBox::type()
 {
-    NSTransactions::__ReasonCode_ReasonCodeEnum ret;
-    ret.deserialize(this->itemData(this->currentIndex()));
+    NSTransactions::NDN__ReasonCode_ReasonCodeEnum ret;
+    //ret.deserialize(this->itemData(this->currentIndex()));
     return ret.type();
 }
 
@@ -65,17 +65,17 @@ bool NDNMovementTypeComboBox::isStorno()
     return false;
 }
 
-NSTransactions::__MovementType NDNMovementTypeComboBox::movementType()
+NSTransactions::NDN__MovementType NDNMovementTypeComboBox::movementType()
 {
-    NSTransactions::__MovementType ret;
-    ret.deserialize(this->itemData(this->currentIndex()));
+    NSTransactions::NDN__MovementType ret;
+    //ret.deserialize(this->itemData(this->currentIndex()));
     return ret;
 }
 
-NSTransactions::__MovementType::Type NDNMovementTypeComboBox::type()
+NSTransactions::NDN__MovementType::Type NDNMovementTypeComboBox::type()
 {
-    NSTransactions::__MovementType ret;
-    ret.deserialize(this->itemData(this->currentIndex()));
+    NSTransactions::NDN__MovementType ret;
+    //ret.deserialize(this->itemData(this->currentIndex()));
     return ret.type();
 }
 

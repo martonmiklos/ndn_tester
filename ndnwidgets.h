@@ -4,15 +4,15 @@
 #include <QComboBox>
 #include <QSqlQuery>
 
-#include "wsdl_Transactions.h"
+#include "gen_src/Transactions.h"
 
 class NDNReasonCodeComboBox : public QComboBox
 {
     Q_OBJECT
 public:
     explicit NDNReasonCodeComboBox(QWidget *parent = 0, bool allowEmpty = true);
-    NSTransactions::__ReasonCode_ReasonCodeEnum reasonCode();
-    NSTransactions::__ReasonCode_ReasonCodeEnum::Type type();
+    NSTransactions::NDN__ReasonCode_ReasonCodeEnum reasonCode();
+    NSTransactions::NDN__ReasonCode_ReasonCodeEnum::Type type();
 };
 
 class NDNMovementTypeComboBox : public QComboBox
@@ -20,8 +20,8 @@ class NDNMovementTypeComboBox : public QComboBox
     Q_OBJECT
 public:
     explicit NDNMovementTypeComboBox(QWidget *parent = 0, bool init = true);
-    NSTransactions::__MovementType movementType();
-    NSTransactions::__MovementType::Type type();
+    NSTransactions::NDN__MovementType movementType();
+    NSTransactions::NDN__MovementType::Type type();
     bool reasonNeeded();
     bool isStorno();
 };

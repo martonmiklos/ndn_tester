@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QAbstractTableModel>
 
-#include "wsdl_Monitoring.h"
+#include "gen_src/Monitoring.h"
 #include "ndnsettings.h"
 
 namespace Ui {
@@ -21,10 +21,10 @@ public:
 
 private slots:
     void on_pushButtonGetOpeningStock_clicked();
-    void getOpeningStockDone(NSMonitoring::TNS__GetOpeningStockResponse response);
+    void getOpeningStockDone(NSMonitoring::NDN_COMM__GetOpeningStockResponse response);
     void getOpeningStockError(KDSoapMessage message);
 
-    void getDocumentDone(NSMonitoring::TNS__GetDocumentResponse response);
+    void getDocumentDone(NSMonitoring::NDN_COMM__GetDocumentResponse response);
     void getDocumentError(KDSoapMessage message);
 
     void soapError(QString,KDSoapMessage);
@@ -35,7 +35,7 @@ private:
     NSMonitoring::Monitoring monitoring;
     NDNSettings *m_settings;
 
-    void setTableContentsToTreeWidget(NSMonitoring::__ArrayOfTableContent table);
+    void setTableContentsToTreeWidget(NSMonitoring::NDN__ArrayOfTableContent table);
 };
 
 #endif // DIALOGNDNMONITORING_H

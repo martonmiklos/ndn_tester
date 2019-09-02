@@ -7,28 +7,28 @@
 #include <QSqlError>
 #include <QDebug>
 
-#include "wsdl_MasterData.h"
+#include "gen_src/MasterData.h"
 
 class DataBaseHandler : public QObject
 {
     Q_OBJECT
 public:
-    explicit DataBaseHandler(QObject *parent = 0);
+    explicit DataBaseHandler(QObject *parent = nullptr);
     void init();
 
-    bool addVATRate(NSMasterData::__VATRate result);
-    bool updateVATRate(NSMasterData::__VATRate result);
+    bool addVATRate(NSMasterData::NDN__VATRate result);
+    bool updateVATRate(NSMasterData::NDN__VATRate result);
 
-    bool addManufacturer(NSMasterData::__Manufacturer result);
-    bool updateManufacturer(NSMasterData::__Manufacturer result);
+    bool addManufacturer(NSMasterData::NDN__Manufacturer result);
+    bool updateManufacturer(NSMasterData::NDN__Manufacturer result);
 
-    bool addProductGroup(NSMasterData::__ProductGroup result);
-    bool updateProductGroup(NSMasterData::__ProductGroup result);
+    bool addProductGroup(NSMasterData::NDN__ProductGroup result);
+    bool updateProductGroup(NSMasterData::NDN__ProductGroup result);
 
-    bool addProduct(NSMasterData::__Product result);
+    bool addProduct(NSMasterData::NDN__Product result);
 
-    bool addProductPrice(NSMasterData::__ProductPrice result);
-    bool addProductPackagingUnit(NSMasterData::__ProductPackagingUnit result);
+    bool addProductPrice(NSMasterData::NDN__ProductPrice result);
+    bool addProductPackagingUnit(NSMasterData::NDN__ProductPackagingUnit result);
 
     QString errorString() const {return mErrorString;}
 private:
