@@ -6,6 +6,34 @@
 
 #include <QtCrypto/QtCrypto>
 
+bool NDNSettings::loadCertificate()
+{
+    QFile certFile(m_certificatePath);
+    if (!certFile.open(QFile::ReadOnly)) {
+        setError(tr("Unable to open the %1 certificate file").arg(m_certificatePath));
+        return  false;
+    }
+    QSslCertificate certificate;
+    QList<QSslCertificate> CaCertificates;
+    QSslKey sslKey;
+
+    bool certLoaded = QSslCertificate::importPkcs12(&certFile,
+                                                    &sslKey,
+                                                    &certificate,
+                                                    &CaCertificates,
+                                                    m_certificatePassword.toLocal8Bit());
+    certFile.close();
+
+    if (!certLoaded) {
+        setError(tr("Unable to load the %1 certificate file").arg(m_certificatePath));
+        return  false;
+    }
+    m_SSLConfiguration.setPrivateKey(sslKey);
+    m_SSLConfiguration.setLocalCertificate(certificate);
+    m_SSLConfiguration.setCaCertificates(CaCertificates);
+    return  true;
+}
+
 NDNSettings::NDNSettings(QObject *parent) :
     QObject(parent)
 {
@@ -21,55 +49,7 @@ NDNSettings::NDNSettings(QObject *parent) :
     m_frequencyInMinutes = 0;
     m_offsetInMinutes = 0;
 
-    /*
-    // read client cert first
-    QFile clientCertFile("/home/mm/Projektek/qt/qtrafik/soap/certs/clientcert.pem");
-    clientCertFile.open(QFile::ReadOnly);
-    QSslCertificate cert(&clientCertFile);
-    clientCertFile.close();
-    m_SSLConfiguration.setLocalCertificate(cert);
-
-    // read ca cert
-    QFile caCertFile("/home/mm/Projektek/qt/qtrafik/soap/certs/cacert.pem");
-    caCertFile.open(QFile::ReadOnly);
-    QSslCertificate caCert(&caCertFile);
-    caCertFile.close();
-    CACerts.append(caCert);
-    m_SSLConfiguration.setCaCertificates(CACerts);
-
-    //read key file
-    QFile keyFile("/home/mm/Projektek/qt/qtrafik/soap/certs/privkey.key");
-    keyFile.open(QFile::ReadOnly);
-    QSslKey key(&keyFile, QSsl::Rsa, QSsl::Pem, QSsl::PrivateKey, "1234");
-    m_SSLConfiguration.setPrivateKey(key);*/
-
-    //initialize QCA
-    QCA::init();
-
-    if (QFile::exists(m_certificatePath)) {
-        if (QCA::isSupported("pkcs12")) {
-            QCA::KeyBundle bundle(m_certificatePath, QCA::SecureArray(m_certificatePassword.toLocal8Bit()));
-
-            QList<QSslCertificate> CACerts;
-            foreach (QCA::Certificate cert, bundle.certificateChain()) {
-                if (cert.isCA()) {
-                    QSslCertificate CACertificate(cert.toPEM().toLocal8Bit(), QSsl::Pem);
-                    CACerts.append(CACertificate);
-                } else {
-                    m_SSLConfiguration.setLocalCertificate(QSslCertificate(cert.toPEM().toLocal8Bit(), QSsl::Pem));
-                }
-            }
-
-            m_SSLConfiguration.setCaCertificates(CACerts);
-
-            QSslKey key(bundle.privateKey().toDER().toByteArray(), QSsl::Rsa, QSsl::Der);
-            m_SSLConfiguration.setPrivateKey(key);
-        } else {
-            setError(tr("QCA PKCS12# support is missing check the QCA libraries in your plugin load paths!"));
-        }
-    } else {
-        setError(tr("Certificate file does not exists"));
-    }
+    loadCertificate();
 }
 
 void NDNSettings::setTransactionCallConfig(const NSTransactions::NDN__TransactionCallConfig & callConfig)

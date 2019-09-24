@@ -1,5 +1,8 @@
 #include "dialogndnsettings.h"
 #include "ui_dialogndnsettings.h"
+
+#include "gen_src/MasterData.h"
+
 #include <QFileDialog>
 #include <QMessageBox>
 
@@ -19,7 +22,7 @@ DialogNDNSettings::~DialogNDNSettings()
 
 void DialogNDNSettings::showEvent(QShowEvent *event)
 {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
     on_pushButtonRefreshCommunicationParameters_clicked();
 }
 
@@ -37,6 +40,7 @@ void DialogNDNSettings::on_buttonBox_accepted()
     m_settings->setCashRegisterID(ui->lineEditCashregisterID->text());
     m_settings->setCertificatePassword(ui->lineEditCertificatePassword->text());
     m_settings->save();
+    m_settings->loadCertificate();
 }
 
 void DialogNDNSettings::on_buttonBox_rejected()
@@ -69,4 +73,66 @@ void DialogNDNSettings::restoreGUIFromSettings()
     ui->lineEditCertificatePath->setText(m_settings->certificatePath());
     ui->lineEditCertificatePassword->setText(m_settings->certificatePassword());
     ui->lineEditCashregisterID->setText(m_settings->cashRegisterID());
+}
+
+void DialogNDNSettings::tearDownTestSignals()
+{
+    disconnect(&m_masterData, &NSMasterData::MasterData::soapError,
+            this, &DialogNDNSettings::testSoapError);
+    disconnect(&m_masterData, &NSMasterData::MasterData::getCurrentVATRatesDone,
+            this, &DialogNDNSettings::testOK);
+    disconnect(&m_masterData, &NSMasterData::MasterData::getCurrentVATRatesError,
+            this, &DialogNDNSettings::testFailed);
+}
+
+void DialogNDNSettings::on_pushButtonTestConnection_clicked()
+{
+    NSMasterData::NDN_COMM__GetCurrentVATRates getVATRates;
+    NDNSettings tmpSettings;
+    getVATRates.setShopId(ui->shopIDLineEdit->text());
+
+    if (!tmpSettings.loadCertificate()) {
+        QMessageBox::critical(this,
+                              tr("Hiba"),
+                              tr("Nem sikerült a tanúsítványt betölteni!\n"
+                                 "Talán a jelszó nem helyes?"));
+        return;
+    }
+    connect(&m_masterData, &NSMasterData::MasterData::soapError,
+            this, &DialogNDNSettings::testSoapError);
+    connect(&m_masterData, &NSMasterData::MasterData::getCurrentVATRatesDone,
+            this, &DialogNDNSettings::testOK);
+    connect(&m_masterData, &NSMasterData::MasterData::getCurrentVATRatesError,
+            this, &DialogNDNSettings::testFailed);
+    m_masterData.clientInterface()->setSslConfiguration(tmpSettings.sslConfiguration());
+    m_masterData.clientInterface()->setUseWsAddressing(true);
+    m_masterData.setEndPoint(ui->webserviceURLLineEdit->text() + "MasterData.svc");
+    m_masterData.asyncGetCurrentVATRates(getVATRates);
+}
+
+void DialogNDNSettings::testOK()
+{
+    tearDownTestSignals();
+    QMessageBox::information(this,
+                          tr("Siker"),
+                          tr("NDN kapcsolat rendben"));
+}
+
+void DialogNDNSettings::testFailed(const KDSoapMessage& fault)
+{
+    tearDownTestSignals();
+    QMessageBox::information(this,
+                          tr("Hiba"),
+                          tr("NDN kapcsolat sikertelen\n"
+                             "%1").arg(fault.faultAsString()));
+}
+
+void DialogNDNSettings::testSoapError(const QString& method, const KDSoapMessage& fault)
+{
+    Q_UNUSED(method)
+    tearDownTestSignals();
+    QMessageBox::information(this,
+                          tr("Hiba"),
+                          tr("NDN kapcsolat sikertelen\n"
+                             "%1").arg(fault.faultAsString()));
 }

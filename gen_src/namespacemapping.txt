@@ -1,0 +1,2 @@
+http://schemas.datacontract.org/2004/07/ND.Common.Interface=NDN
+http://localhost/nd/communication/=NDN_COMM

@@ -22,6 +22,10 @@ void DataBaseHandler::init()
     }
 }
 
+bool DataBaseHandler::getVATRateByNDNCode(const QString &ndnCode, NSMasterData::NDN__VATRate *vatRate)
+{
+}
+
 bool DataBaseHandler::addVATRate(NSMasterData::NDN__VATRate result)
 {
     QSqlQuery query;
@@ -66,9 +70,19 @@ bool DataBaseHandler::addProductGroup(NSMasterData::NDN__ProductGroup result)
     return executeQuery(query);
 }
 
-bool DataBaseHandler::addProduct(NSMasterData::NDN__Product result)
+bool DataBaseHandler::productExists(const QString &code)
 {
-    qWarning() << result.name();
+    QSqlQuery query;
+    query.prepare("SELECT COUNT(code) as exist_s FROM ndn_products WHERE code = :code");
+    query.bindValue(":code", code);
+    if (executeQuery(query) && query.next()) {
+        return (query.value("exist_s").toInt() > 0);
+    }
+    return false;
+}
+
+bool DataBaseHandler::addProduct(const NSMasterData::NDN__Product result)
+{
     QSqlQuery query;
     query.prepare("INSERT INTO ndn_products"
                   "(BaseBarCode, BaseUnitOfMeasure, CashRegisterVATCode, Code, CustCommCode, ExciseCategory, LastModifiedOn, ManufacturerCode, Name, PackagingQuantity, PackagingUnitOfMeasure, ProductGroup, ShortName, ValidTo)"
@@ -78,6 +92,29 @@ bool DataBaseHandler::addProduct(NSMasterData::NDN__Product result)
     query.bindValue(":BaseUnitOfMeasure", result.baseUnitOfMeasure());
     query.bindValue(":CashRegisterVATCode", result.cashRegisterVATCode().type());
     query.bindValue(":Code", result.code());
+    query.bindValue(":CustCommCode", result.custCommCode());
+    query.bindValue(":ExciseCategory", result.exciseCategory().type());
+    query.bindValue(":LastModifiedOn", result.lastModifiedOn());
+    query.bindValue(":ManufacturerCode", result.manufacturerCode());
+    query.bindValue(":Name", result.name());
+    query.bindValue(":PackagingQuantity", result.packagingQuantity());
+    query.bindValue(":PackagingUnitOfMeasure", result.packagingUnitOfMeasure());
+    query.bindValue(":ProductGroup", result.productGroup());
+    query.bindValue(":ShortName", result.shortName());
+    query.bindValue(":ValidTo", result.validTo());
+    return executeQuery(query);
+}
+
+bool DataBaseHandler::updateProduct(const NSMasterData::NDN__Product result)
+{
+    QSqlQuery query;
+    query.prepare("UPDATE ndn_products"
+                  "SET (BaseBarCode, BaseUnitOfMeasure, CashRegisterVATCode, CustCommCode, ExciseCategory, LastModifiedOn, ManufacturerCode, Name, PackagingQuantity, PackagingUnitOfMeasure, ProductGroup, ShortName, ValidTo)"
+                  " VALUES "
+                  "(:BaseBarCode, :BaseUnitOfMeasure, :CashRegisterVATCode, :CustCommCode, :ExciseCategory, :LastModifiedOn, :ManufacturerCode, :Name, :PackagingQuantity, :PackagingUnitOfMeasure, :ProductGroup, :ShortName, :ValidTo)");
+    query.bindValue(":BaseBarCode", result.baseBarCode());
+    query.bindValue(":BaseUnitOfMeasure", result.baseUnitOfMeasure());
+    query.bindValue(":CashRegisterVATCode", result.cashRegisterVATCode().type());
     query.bindValue(":CustCommCode", result.custCommCode());
     query.bindValue(":ExciseCategory", result.exciseCategory().type());
     query.bindValue(":LastModifiedOn", result.lastModifiedOn());

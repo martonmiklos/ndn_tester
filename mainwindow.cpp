@@ -15,18 +15,22 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(dbHandler, SIGNAL(errorHappened()), this, SLOT(dataBaseError()));
     dbHandler->init();
 
-    masterData.clientInterface()->setSslConfiguration(ndnSettings.sslConfiguration());
-    //masterData.clientInterface()->setUsingAddressing(true);
-    masterData.setEndPoint(ndnSettings.webserviceURLBase()+"MasterData.svc");
+    m_masterData.clientInterface()->setSslConfiguration(ndnSettings.sslConfiguration());
+    m_masterData.clientInterface()->setUseWsAddressing(true);
+    m_masterData.setEndPoint(ndnSettings.webserviceURLBase()+"MasterData.svc");
+    connect(&m_masterData, &NSMasterData::MasterData::soapError,
+            this, &MainWindow::soapError);
 
-    connect(&masterData, SIGNAL(getManufacturersDone(NSMasterData::NDN_COMM__GetManufacturersResponse)),
+    connect(&m_masterData, SIGNAL(getManufacturersDone(NSMasterData::NDN_COMM__GetManufacturersResponse)),
             this, SLOT(getManufacturersDone(NSMasterData::NDN_COMM__GetManufacturersResponse)));
-    connect(&masterData, SIGNAL(getProductsDone(NSMasterData::NDN_COMM__GetProductsResponse)),
+    connect(&m_masterData, SIGNAL(getProductsDone(NSMasterData::NDN_COMM__GetProductsResponse)),
             this, SLOT(getProductsDone(NSMasterData::NDN_COMM__GetProductsResponse)));
-    connect(&masterData, SIGNAL(getCurrentVATRatesDone(NSMasterData::NDN_COMM__GetCurrentVATRatesResponse)),
+    connect(&m_masterData, SIGNAL(getCurrentVATRatesDone(NSMasterData::NDN_COMM__GetCurrentVATRatesResponse)),
             this, SLOT(getVATRatesDone(NSMasterData::NDN_COMM__GetCurrentVATRatesResponse)));
-    connect(&masterData, SIGNAL(getProductGroupsDone(NSMasterData::NDN_COMM__GetProductGroupsResponse)),
+    connect(&m_masterData, SIGNAL(getProductGroupsDone(NSMasterData::NDN_COMM__GetProductGroupsResponse)),
             this, SLOT(getProductGroupsDone(NSMasterData::NDN_COMM__GetProductGroupsResponse)));
+    connect(&m_masterData, &NSMasterData::MasterData::getProductsSinceDone,
+            this, &MainWindow::getProductsSinceDone);
 
     productsModel = new NDNProductsModel(this);
     connect(productsModel, SIGNAL(rowCountChanged(int)), this, SLOT(productsModelRowCountChanged(int)));
@@ -61,6 +65,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ndnSettingsDialog = new DialogNDNSettings(&ndnSettings, this);
     ndnMonitoringDialog = new DialogNDNMonitoring(&ndnSettings, this);
     ndnMovementTesterDialog = new DialogNDNMovementTester(&ndnSettings, this);
+
+    QDateTime lastProductsUpdateSaved = m_settings.value("lastProductsUpdate", QDateTime()).toDateTime();
+    if (lastProductsUpdateSaved.isValid())
+        ui->labelLastUpdated->setText(lastProductsUpdateSaved.toString());
+    else
+        ui->labelLastUpdated->setText(tr("Product data not yet retrived"));
 }
 
 MainWindow::~MainWindow()
@@ -78,23 +88,42 @@ void MainWindow::dataBaseError()
 
 void MainWindow::on_pushButtonGetProducts_clicked()
 {
-    NSMasterData::NDN_COMM__GetProducts getProducts;
-    getProducts.setShopId(ndnSettings.shopID());
-    masterData.asyncGetProducts(getProducts);
+    QDateTime lastUpdate = m_settings.value("lastProductsUpdate", QDateTime()).toDateTime();
+    QDateTime lastProductQueryStarted = QDateTime::currentDateTime();
+    if (!lastUpdate.isValid()) {
+        NSMasterData::NDN_COMM__GetProducts getProducts;
+        getProducts.setShopId(ndnSettings.shopID());
+        m_masterData.asyncGetProducts(getProducts);
+    } else {
+        NSMasterData::NDN_COMM__GetProductsSince getProducts;
+        getProducts.setShopId(ndnSettings.shopID());
+        getProducts.setModifiedSince(lastUpdate);
+        m_masterData.asyncGetProductsSince(getProducts);
+    }
 }
 
 void MainWindow::getProductsDone(NSMasterData::NDN_COMM__GetProductsResponse response)
 {
+    m_settings.setValue("lastProductsUpdate", lastProductQueryStarted);
     QSqlDatabase::database().transaction();
     foreach (NSMasterData::NDN__Product product, response.getProductsResult().product()) {
-        dbHandler->addProduct(product);
-        /*foreach (NSMasterData::NDN__ProductPrice price, product.prices().productPrice()) {
-            dbHandler.addProductPrice(price);
-        }
+        if (!dbHandler->productExists(product.code()))
+            dbHandler->addProduct(product);
+        else
+            dbHandler->updateProduct(product);
+    }
+    QSqlDatabase::database().commit();
+}
 
-        foreach (NSMasterData::NDN__ProductPackagingUnit productPackagingUnit, product.packagingUnits().productPackagingUnit()) {
-            dbHandler.addProductPackagingUnit(productPackagingUnit);
-        }*/
+void MainWindow::getProductsSinceDone(NSMasterData::NDN_COMM__GetProductsSinceResponse response)
+{
+    m_settings.setValue("lastProductsUpdate", lastProductQueryStarted);
+    QSqlDatabase::database().transaction();
+    foreach (NSMasterData::NDN__Product product, response.getProductsSinceResult().product()) {
+        if (!dbHandler->productExists(product.code()))
+            dbHandler->addProduct(product);
+        else
+            dbHandler->updateProduct(product);
     }
     QSqlDatabase::database().commit();
 }
@@ -103,7 +132,7 @@ void MainWindow::on_pushButtonGetManufacturers_clicked()
 {
     NSMasterData::NDN_COMM__GetManufacturers getManufacturers;
     getManufacturers.setShopId(ndnSettings.shopID());
-    masterData.asyncGetManufacturers(getManufacturers);
+    m_masterData.asyncGetManufacturers(getManufacturers);
 }
 
 void MainWindow::getManufacturersDone(NSMasterData::NDN_COMM__GetManufacturersResponse response)
@@ -117,14 +146,14 @@ void MainWindow::on_pushButtonGetVATRates_clicked()
 {
     NSMasterData::NDN_COMM__GetCurrentVATRates getVATRates;
     getVATRates.setShopId(ndnSettings.shopID());
-    masterData.asyncGetCurrentVATRates(getVATRates);
+    m_masterData.asyncGetCurrentVATRates(getVATRates);
 }
 
 void MainWindow::getVATRatesDone(NSMasterData::NDN_COMM__GetCurrentVATRatesResponse response)
 {
     foreach (NSMasterData::NDN__VATRate vatRate, response.getCurrentVATRatesResult().vATRate()) {
+        
         dbHandler->addVATRate(vatRate);
-        qWarning() << vatRate.cashRegisterVATCode();
     }
 }
 
@@ -132,7 +161,7 @@ void MainWindow::on_pushButtonGetProductGroups_clicked()
 {
     NSMasterData::NDN_COMM__GetProductGroups getProductGroups;
     getProductGroups.setShopId(ndnSettings.shopID());
-    masterData.asyncGetProductGroups(getProductGroups);
+    m_masterData.asyncGetProductGroups(getProductGroups);
 }
 
 void MainWindow::getProductGroupsDone(NSMasterData::NDN_COMM__GetProductGroupsResponse response)
@@ -180,4 +209,11 @@ void MainWindow::on_actionNDN_logs_triggered()
 void MainWindow::on_actionTransaction_tester_triggered()
 {
     ndnMovementTesterDialog->show();
+}
+
+void MainWindow::soapError(const QString& method, const KDSoapMessage& fault)
+{
+    ui->textBrowserLog->append(tr("%1: Error in method %2")
+                               .arg(QDateTime::currentDateTime().toString(), method));
+    ui->textBrowserLog->append(fault.faultAsString());
 }

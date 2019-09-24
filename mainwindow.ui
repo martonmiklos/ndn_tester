@@ -18,7 +18,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tabProducts">
        <attribute name="title">
@@ -48,6 +48,16 @@
           </attribute>
          </widget>
         </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="pushButtonProductFilterOptions">
+          <property name="text">
+           <string>Filter options</string>
+          </property>
+          <property name="shortcut">
+           <string>Ctrl+F</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="0">
          <widget class="QPushButton" name="pushButtonGetProducts">
           <property name="text">
@@ -56,22 +66,36 @@
          </widget>
         </item>
         <item row="3" column="0" colspan="3">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Last updated:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelLastUpdated">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="4" column="0" colspan="3">
          <widget class="QLabel" name="labelRecordsCount">
           <property name="text">
            <string/>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QPushButton" name="pushButtonProductFilterOptions">
-          <property name="text">
-           <string>Filter options</string>
-          </property>
-          <property name="shortcut">
-           <string>Ctrl+F</string>
           </property>
          </widget>
         </item>
@@ -159,6 +183,23 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tabLog">
+       <attribute name="title">
+        <string>Log</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="0">
+         <widget class="QTextBrowser" name="textBrowserLog"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="pushButton">
+          <property name="text">
+           <string>Clear</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -169,7 +210,7 @@
      <x>0</x>
      <y>0</y>
      <width>840</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSettings">

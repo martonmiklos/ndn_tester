@@ -49,6 +49,8 @@ public:
     QStringList errors() const {return m_errors;}
     void clearErrors() {m_errors.clear();}
     void save();
+    bool loadCertificate();
+
 signals:
     void errorHappened();
 

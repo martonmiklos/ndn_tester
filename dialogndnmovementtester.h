@@ -39,7 +39,7 @@ class DialogNDNMovementTester : public QDialog
     Q_OBJECT
 
 public:
-    explicit DialogNDNMovementTester(NDNSettings *settings, QWidget *parent = 0);
+    explicit DialogNDNMovementTester(NDNSettings *settings, QWidget *parent = nullptr);
     ~DialogNDNMovementTester();
 
 private slots:

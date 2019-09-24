@@ -36,14 +36,12 @@ private slots:
     void on_pushButtonGetManufacturers_clicked();
     void getManufacturersDone(NSMasterData::NDN_COMM__GetManufacturersResponse);
     void getProductsDone(NSMasterData::NDN_COMM__GetProductsResponse);
+    void getProductsSinceDone(NSMasterData::NDN_COMM__GetProductsSinceResponse);
     void getVATRatesDone(NSMasterData::NDN_COMM__GetCurrentVATRatesResponse);
     void getProductGroupsDone(NSMasterData::NDN_COMM__GetProductGroupsResponse response);
     void on_pushButtonGetVATRates_clicked();
-
     void on_pushButtonGetProductGroups_clicked();
-
     void on_pushButtonUpdateVATRates_clicked();
-
     void on_pushButtonUpdateProducts_clicked();
 
 
@@ -59,13 +57,14 @@ private slots:
     void on_actionNDN_logs_triggered();
 
     void on_actionTransaction_tester_triggered();
+    void soapError(const QString &method, const KDSoapMessage &fault);
 
 private:
-    NSMasterData::MasterData masterData;
+    NSMasterData::MasterData m_masterData;
 
     Ui::MainWindow *ui;
     QSslConfiguration mSslConfiguration;
-    QSettings settings;
+    QSettings m_settings;
     DataBaseHandler *dbHandler;
     QSqlTableModel *manufacturersModel, *vatRatesModel, *productGroupsModel;
     NDNProductsModel *productsModel;
@@ -75,6 +74,7 @@ private:
     DialogNDNMonitoring *ndnMonitoringDialog;
     DialogNDNMovementTester *ndnMovementTesterDialog;
     NDNSettings ndnSettings;
+    QDateTime lastProductQueryStarted;
 };
 
 #endif // MAINWINDOW_H

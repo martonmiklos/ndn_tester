@@ -16,6 +16,7 @@ public:
     explicit DataBaseHandler(QObject *parent = nullptr);
     void init();
 
+    bool getVATRateByNDNCode(const QString &ndnCode, NSMasterData::NDN__VATRate *vatRate);
     bool addVATRate(NSMasterData::NDN__VATRate result);
     bool updateVATRate(NSMasterData::NDN__VATRate result);
 
@@ -25,7 +26,9 @@ public:
     bool addProductGroup(NSMasterData::NDN__ProductGroup result);
     bool updateProductGroup(NSMasterData::NDN__ProductGroup result);
 
-    bool addProduct(NSMasterData::NDN__Product result);
+    bool productExists(const QString &code);
+    bool addProduct(const NSMasterData::NDN__Product result);
+    bool updateProduct(const NSMasterData::NDN__Product result);
 
     bool addProductPrice(NSMasterData::NDN__ProductPrice result);
     bool addProductPackagingUnit(NSMasterData::NDN__ProductPackagingUnit result);
